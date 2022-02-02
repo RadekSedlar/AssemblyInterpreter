@@ -1,0 +1,15 @@
+C:\Users\GAMEBOX\source\repos\AssemblyInterpret\AssemblyInterpret\bin\Debug\net6.0\AssemblyInterpret.exe
+C:\Users\GAMEBOX\source\repos\AssemblyInterpret\AssemblyInterpret\bin\Debug\net6.0\AssemblyInterpret.deps.json
+C:\Users\GAMEBOX\source\repos\AssemblyInterpret\AssemblyInterpret\bin\Debug\net6.0\AssemblyInterpret.runtimeconfig.json
+C:\Users\GAMEBOX\source\repos\AssemblyInterpret\AssemblyInterpret\bin\Debug\net6.0\AssemblyInterpret.dll
+C:\Users\GAMEBOX\source\repos\AssemblyInterpret\AssemblyInterpret\bin\Debug\net6.0\ref\AssemblyInterpret.dll
+C:\Users\GAMEBOX\source\repos\AssemblyInterpret\AssemblyInterpret\bin\Debug\net6.0\AssemblyInterpret.pdb
+C:\Users\GAMEBOX\source\repos\AssemblyInterpret\AssemblyInterpret\obj\Debug\net6.0\AssemblyInterpret.csproj.AssemblyReference.cache
+C:\Users\GAMEBOX\source\repos\AssemblyInterpret\AssemblyInterpret\obj\Debug\net6.0\AssemblyInterpret.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\GAMEBOX\source\repos\AssemblyInterpret\AssemblyInterpret\obj\Debug\net6.0\AssemblyInterpret.AssemblyInfoInputs.cache
+C:\Users\GAMEBOX\source\repos\AssemblyInterpret\AssemblyInterpret\obj\Debug\net6.0\AssemblyInterpret.AssemblyInfo.cs
+C:\Users\GAMEBOX\source\repos\AssemblyInterpret\AssemblyInterpret\obj\Debug\net6.0\AssemblyInterpret.csproj.CoreCompileInputs.cache
+C:\Users\GAMEBOX\source\repos\AssemblyInterpret\AssemblyInterpret\obj\Debug\net6.0\AssemblyInterpret.dll
+C:\Users\GAMEBOX\source\repos\AssemblyInterpret\AssemblyInterpret\obj\Debug\net6.0\ref\AssemblyInterpret.dll
+C:\Users\GAMEBOX\source\repos\AssemblyInterpret\AssemblyInterpret\obj\Debug\net6.0\AssemblyInterpret.pdb
+C:\Users\GAMEBOX\source\repos\AssemblyInterpret\AssemblyInterpret\obj\Debug\net6.0\AssemblyInterpret.genruntimeconfig.cache
