@@ -25,28 +25,28 @@ public class InstructionInterpreter
         _registers.Esp = _memory.MemorySize - 1;
     }
 
-    private int ValueOfAddressPart(string addressPart)
+    private (int, bool) ValueOfAddressPart(string addressPart)
     {
         var registerFindingResult = _registers.FindRegister(addressPart);
         if (registerFindingResult.Item1)
         {
             if (registerFindingResult.Item2 == ByteCount.DB)
-                return _registers.GetByteRegister(addressPart);
+                return (_registers.GetByteRegister(addressPart), true);
             if (registerFindingResult.Item2 == ByteCount.DW)
-                return _registers.GetWordRegister(addressPart);
+                return (_registers.GetWordRegister(addressPart), true);
             if (registerFindingResult.Item2 == ByteCount.DD)
-                return _registers.GetDoubleWordRegister(addressPart);
+                return (_registers.GetDoubleWordRegister(addressPart), true);
         }
 
-        var globalVarFinfingResult = _memory.GetGlobalVar(addressPart);
-        if (globalVarFinfingResult is not null)
+        var globalVarFindingResult = _memory.GetGlobalVar(addressPart);
+        if (globalVarFindingResult is not null)
         {
-            return _memory.ReadDoubleWord(globalVarFinfingResult.Address);
+            return (_memory.ReadDoubleWord(globalVarFindingResult.Address), false);
         }
         
         if (int.TryParse(addressPart, out int constantValue))
         {
-            return constantValue;
+            return (constantValue, false);
         }
 
         throw new Exception($"'{addressPart}' could not be translated to address.");
@@ -57,14 +57,26 @@ public class InstructionInterpreter
         string[] addressParts = addressText.Split('+', '-');
         if (addressParts.Length == 1)
         {
-            return ValueOfAddressPart(addressParts[0]);
+            return ValueOfAddressPart(addressParts[0]).Item1;
         }
 
         if (addressParts.Length == 2)
         {
-            return addressText.Contains('+')
-                ? ValueOfAddressPart(addressParts[0]) + ValueOfAddressPart(addressParts[1])
-                : ValueOfAddressPart(addressParts[0]) - ValueOfAddressPart(addressParts[1]);
+            var addressValue1 = ValueOfAddressPart(addressParts[0]);
+            var addressValue2 = ValueOfAddressPart(addressParts[1]);
+
+            var addition = addressText.Contains('+');
+
+            if (!addition)
+            {
+                if (addressValue1.Item2 && addressValue2.Item2)
+                {
+                    throw new Exception($"Cannot subtract two registers. '{addressText}'");
+                }
+
+                return addressValue1.Item1 - addressValue2.Item1;
+            }
+            return addressValue1.Item1 + addressValue2.Item1;
         }
 
         throw new Exception($"Address cannot be composed from {addressParts.Length} parts");
@@ -201,6 +213,13 @@ public class InstructionInterpreter
         }
         
         // push <mem>
+        if (arguments[0] is MemoryArgument)
+        {
+            var memoryArgument = (arguments[0] as MemoryArgument) ?? new MemoryArgument(0);
+            _registers.Esp -= 4;
+            _memory.SetDoubleWord(_registers.Esp, _memory.ReadDoubleWord(memoryArgument.Address));
+            return;
+        }
         
         // push <con32>
         if (arguments[0] is ConstantArgument)
@@ -263,13 +282,54 @@ public class InstructionInterpreter
         // mov <reg>,<mem>
         if (arguments[0] is RegisterArgument && arguments[1] is MemoryArgument)
         {
+            var registerArgument = (arguments[0] as RegisterArgument) ?? new RegisterArgument("eax", ByteCount.DD);
+            var memoryArgument = (arguments[1] as MemoryArgument) ?? new MemoryArgument(0);
             
+
+            switch (registerArgument.ByteCount)
+            {
+                case ByteCount.DB:
+                    _registers.
+                        SetByteRegister(registerArgument.RegisterIdentifier, 
+                            _memory.ReadByte(memoryArgument.Address));
+                    break;
+                case ByteCount.DW:
+                    _registers.
+                        SetWordRegister(registerArgument.RegisterIdentifier, 
+                            _memory.ReadWord(memoryArgument.Address));
+                    break;
+                case ByteCount.DD:
+                    _registers.
+                        SetDoubleWordRegister(registerArgument.RegisterIdentifier, 
+                            _memory.ReadDoubleWord(memoryArgument.Address));
+                    break;
+                default:
+                    throw new Exception("Invalid byte count.");
+            }
+            return;
         }
         
         // mov <mem>,<reg>
         if (arguments[0] is MemoryArgument && arguments[1] is RegisterArgument)
         {
-            
+            var memoryArgument = (arguments[0] as MemoryArgument) ?? new MemoryArgument(0);
+            var registerArgument = (arguments[1] as RegisterArgument) ?? new RegisterArgument("eax", ByteCount.DD);   
+
+            switch (registerArgument.ByteCount)
+            {
+                case ByteCount.DB:
+                    _memory.SetByte(memoryArgument.Address, _registers.GetByteRegister(registerArgument.RegisterIdentifier));
+                    break;
+                case ByteCount.DW:
+                    _memory.SetWord(memoryArgument.Address, _registers.GetWordRegister(registerArgument.RegisterIdentifier));
+                    break;
+                case ByteCount.DD:
+                    _memory.SetDoubleWord(memoryArgument.Address, _registers.GetDoubleWordRegister(registerArgument.RegisterIdentifier));
+                    break;
+                default:
+                    throw new Exception("Invalid byte count.");
+            }
+            return;
         }
         
         // mov <reg>,<const>

@@ -35,9 +35,9 @@
             }
             set
             {
-                _register = _register >> 8;
-                _register = _register << 8;
-                _register = _register | (int)value;
+                _register >>= 8;
+                _register <<= 8;
+                _register |= value;
             }
         }
         public string LowerHalfText => Convert.ToString(LowerHalf, 2).PadLeft(8, '0');
@@ -51,8 +51,8 @@
             set
             {
                 int temp = value << 8;
-                _register = _register ^ temp;
-                _register = _register | temp;
+                _register ^= temp;
+                _register |= temp;
             }
         }
         public string HigherHalfText => Convert.ToString(HigherHalf, 2).PadLeft(8, '0');
