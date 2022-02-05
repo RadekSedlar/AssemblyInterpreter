@@ -5989,34 +5989,32 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\GAMEBOX\\.nuget\\packages\\": {}
+    "/home/radek/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\GAMEBOX\\source\\repos\\AssemblyInterpret\\IterpretTests\\IterpretTests.csproj",
+      "projectUniqueName": "/home/radek/Repositories/AssemblyInterpreter/IterpretTests/IterpretTests.csproj",
       "projectName": "IterpretTests",
-      "projectPath": "C:\\Users\\GAMEBOX\\source\\repos\\AssemblyInterpret\\IterpretTests\\IterpretTests.csproj",
-      "packagesPath": "C:\\Users\\GAMEBOX\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\GAMEBOX\\source\\repos\\AssemblyInterpret\\IterpretTests\\obj\\",
+      "projectPath": "/home/radek/Repositories/AssemblyInterpreter/IterpretTests/IterpretTests.csproj",
+      "packagesPath": "/home/radek/.nuget/packages/",
+      "outputPath": "/home/radek/Repositories/AssemblyInterpreter/IterpretTests/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\GAMEBOX\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "/home/radek/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net6.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net6.0": {
           "targetAlias": "net6.0",
           "projectReferences": {
-            "C:\\Users\\GAMEBOX\\source\\repos\\AssemblyInterpret\\AssemblyInterpret\\AssemblyInterpret.csproj": {
-              "projectPath": "C:\\Users\\GAMEBOX\\source\\repos\\AssemblyInterpret\\AssemblyInterpret\\AssemblyInterpret.csproj"
+            "/home/radek/Repositories/AssemblyInterpreter/AssemblyInterpret/AssemblyInterpret.csproj": {
+              "projectPath": "/home/radek/Repositories/AssemblyInterpreter/AssemblyInterpret/AssemblyInterpret.csproj"
             }
           }
         }
@@ -6067,7 +6065,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.100\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/6.0.101/RuntimeIdentifierGraph.json"
       }
     }
   }
