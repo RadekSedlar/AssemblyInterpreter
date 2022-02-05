@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "9LqPYguJgtD2+ZOqvB+6Lg6+JeuYNDaj4i2+MZwMdx8gdMui6X74UJEvQkuFeB5qCccU3JE2IoQVmOTwWE98JA==",
+  "dgSpecHash": "K4hrPXLsS/l/cKgyg/WFE5FjTVHG2zGyn634O+oYRT7BDNdbP3qnxnZ4HjNzPxCUJ7bAqXZztHf1LpaKbUw4fA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\GAMEBOX\\source\\repos\\AssemblyInterpret\\AssemblyInterpret\\AssemblyInterpret.csproj",
+  "projectFilePath": "/home/radek/Repositories/AssemblyInterpreter/AssemblyInterpret/AssemblyInterpret.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

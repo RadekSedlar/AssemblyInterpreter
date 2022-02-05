@@ -40,7 +40,7 @@ class Program
         memory.PrintMemory();
 
 
-        int strAddress = memory.GetGlobalVar("str").Address;
+        int strAddress = memory.GetGlobalVar("str")!.Address;
         Console.WriteLine();
         for (int i = 0; i < 5; i++)
         {
