@@ -2,12 +2,12 @@
 {
     public class Registers
     {
-        public Int32 Esp
+        public UInt32 Esp
         {
             get => GPRegisters["esp"].Register;
             set => GPRegisters["esp"].Register = value;
         }
-        public Int32 Ebp
+        public UInt32 Ebp
         {
             get => GPRegisters["ebp"].Register;
             set => GPRegisters["ebp"].Register = value;
@@ -15,13 +15,13 @@
         
         #region EAX
 
-        public Int32 Eax
+        public UInt32 Eax
         {
             get => GPRegisters["eax"].Register;
             set => GPRegisters["eax"].Register = value;
         }
 
-        public Int16 Ax
+        public UInt16 Ax
         {
             get => GPRegisters["eax"].Half;
             set => GPRegisters["eax"].Half = value;
@@ -42,13 +42,13 @@
         #endregion
         #region EBX
 
-        public Int32 Ebx
+        public UInt32 Ebx
         {
             get => GPRegisters["ebx"].Register;
             set => GPRegisters["ebx"].Register = value;
         }
 
-        public Int16 Bx
+        public UInt16 Bx
         {
             get => GPRegisters["ebx"].Half;
             set => GPRegisters["ebx"].Half = value;
@@ -69,13 +69,13 @@
         #endregion
         #region ECX
 
-        public Int32 Ecx
+        public UInt32 Ecx
         {
             get => GPRegisters["ecx"].Register;
             set => GPRegisters["ecx"].Register = value;
         }
 
-        public Int16 Cx
+        public UInt16 Cx
         {
             get => GPRegisters["ecx"].Half;
             set => GPRegisters["ecx"].Half = value;
@@ -96,13 +96,13 @@
         #endregion
         #region EDX
 
-        public Int32 Edx
+        public UInt32 Edx
         {
             get => GPRegisters["edx"].Register;
             set => GPRegisters["edx"].Register = value;
         }
 
-        public Int16 Dx
+        public UInt16 Dx
         {
             get => GPRegisters["edx"].Half;
             set => GPRegisters["edx"].Half = value;
@@ -123,13 +123,13 @@
         #endregion
         #region ESI
 
-        public Int32 Esi
+        public UInt32 Esi
         {
             get => GPRegisters["esi"].Register;
             set => GPRegisters["esi"].Register = value;
         }
 
-        public Int16 Si
+        public UInt16 Si
         {
             get => GPRegisters["esi"].Half;
             set => GPRegisters["esi"].Half = value;
@@ -145,13 +145,13 @@
         #endregion
         #region EDI
 
-        public Int32 Edi
+        public UInt32 Edi
         {
             get => GPRegisters["edi"].Register;
             set => GPRegisters["edi"].Register = value;
         }
 
-        public Int16 Di
+        public UInt16 Di
         {
             get => GPRegisters["edi"].Half;
             set => GPRegisters["edi"].Half = value;
@@ -179,7 +179,7 @@
 
         };
 
-        public void SetDoubleWordRegister(string registerIdentifier, Int32 value)
+        public void SetDoubleWordRegister(string registerIdentifier, UInt32 value)
         {
             switch (registerIdentifier)
             {
@@ -206,7 +206,7 @@
             }
         }
         
-        public Int32 GetDoubleWordRegister(string registerIdentifier)
+        public UInt32 GetDoubleWordRegister(string registerIdentifier)
         {
             switch (registerIdentifier)
             {
@@ -227,7 +227,7 @@
             }
         }
         
-        public void SetWordRegister(string registerIdentifier, Int16 value)
+        public void SetWordRegister(string registerIdentifier, UInt16 value)
         {
             switch (registerIdentifier)
             {
@@ -254,7 +254,7 @@
             }
         }
         
-        public Int16 GetWordRegister(string registerIdentifier)
+        public UInt16 GetWordRegister(string registerIdentifier)
         {
             switch (registerIdentifier)
             {

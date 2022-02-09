@@ -3,15 +3,15 @@
 public class GlobalMemory
 {
     private readonly byte[] _memory;
-    public int MemorySize { get; set; }
+    public UInt32 MemorySize { get; set; }
 
-    public GlobalMemory(int memorySize)
+    public GlobalMemory(UInt32 memorySize)
     {
         MemorySize = memorySize;
         _memory = new byte[memorySize];
     }
     
-    public int TopPointer { get; set; }
+    public UInt32 TopPointer { get; set; }
     private List<MemoryCell> MemoryCells { get; set; } = new List<MemoryCell>();
 
     public void PrintMemory()
@@ -40,7 +40,7 @@ public class GlobalMemory
         return toBeReturned;
     }
 
-    private void ThrowIfOutOfMemory(int address)
+    private void ThrowIfOutOfMemory(UInt32 address)
     {
         if (address >= _memory.Length)
         {
@@ -48,35 +48,35 @@ public class GlobalMemory
         }
     }
     
-    public void SetByte(int address, byte value)
+    public void SetByte(UInt32 address, byte value)
     {
         ThrowIfOutOfMemory(address);
         _memory[address] = value;
     }
     
-    public byte ReadByte(int address)
+    public byte ReadByte(UInt32 address)
     {
         ThrowIfOutOfMemory(address);
         return _memory[address];
     }
  
-    public void SetWord(int address, Int16 value)
+    public void SetWord(UInt32 address, UInt16 value)
     {
         ThrowIfOutOfMemory(address + 1);
         _memory[address] = (byte) (value >> 8);
         _memory[address + 1] = (byte)value;
     }
     
-    public Int16 ReadWord(int address)
+    public UInt16 ReadWord(UInt32 address)
     {
         ThrowIfOutOfMemory(address + 1);
-        Int16 retVal = _memory[address];
-        retVal = (short) (retVal << 8);
-        retVal = (short)(retVal | (short)_memory[address + 1]);
+        UInt16 retVal = _memory[address];
+        retVal <<= 8;
+        retVal += _memory[address + 1];
         return retVal;
     }
     
-    public void SetDoubleWord(int address, Int32 value)
+    public void SetDoubleWord(UInt32 address, UInt32 value)
     {
         ThrowIfOutOfMemory(address + 3);
         _memory[address + 3] = (byte) value;
@@ -86,12 +86,17 @@ public class GlobalMemory
 
     }
     
-    public Int32 ReadDoubleWord(int address)
+    public UInt32 ReadDoubleWord(UInt32 address)
     {
         ThrowIfOutOfMemory(address + 3);
-        Int32 firstHalf = (_memory[address] << 24) | (_memory[address + 1] << 16);
-        Int32 secondHalf = (_memory[address + 2] << 8) | _memory[address + 3];
-        return firstHalf | secondHalf;
+        UInt32 retVal = _memory[address];
+        retVal <<= 8;
+        retVal += _memory[address + 1];
+        retVal <<= 8;
+        retVal += _memory[address + 2];
+        retVal <<= 8;
+        retVal += _memory[address + 3];
+        return retVal;
     }
     
 }

@@ -67,7 +67,7 @@ public class DataInterpret
                 var literal = token.Trim('\'');
                 foreach (var character in literal)
                 {
-                    Memory.SetWord(Memory.TopPointer, (Int16)character);
+                    Memory.SetWord(Memory.TopPointer, (UInt16)character);
                     Memory.TopPointer += 2;
                 }
             }
@@ -78,8 +78,8 @@ public class DataInterpret
                 Memory.TopPointer += 2;
             }
             
-            Int16 wordValue;
-            if (Int16.TryParse(token, out wordValue))
+            UInt16 wordValue;
+            if (UInt16.TryParse(token, out wordValue))
             {
                 Memory.SetWord(Memory.TopPointer, wordValue);
                 Memory.TopPointer += 2;
@@ -104,7 +104,7 @@ public class DataInterpret
                 var literal = token.Trim('\'');
                 foreach (var character in literal)
                 {
-                    Memory.SetDoubleWord(Memory.TopPointer, (Int32)character);
+                    Memory.SetDoubleWord(Memory.TopPointer, character);
                     Memory.TopPointer += 4;
                 }
             }
@@ -115,8 +115,8 @@ public class DataInterpret
                 Memory.TopPointer += 4;
             }
             
-            Int32 doubleWordValue;
-            if (Int32.TryParse(token, out doubleWordValue))
+            UInt32 doubleWordValue;
+            if (UInt32.TryParse(token, out doubleWordValue))
             {
                 Memory.SetDoubleWord(Memory.TopPointer, doubleWordValue);
                 Memory.TopPointer += 4;

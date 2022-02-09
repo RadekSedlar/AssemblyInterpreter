@@ -1,6 +1,7 @@
 
 # To ignore all bin direstories
 bin/
+AssemblyInterpret/obj/Debug
 
 
 # User-specific files

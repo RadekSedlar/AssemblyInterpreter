@@ -6,9 +6,9 @@ public abstract class InstructionArgument
 
 public class MemoryArgument : InstructionArgument
 {
-    public int Address  { get; init; }
+    public UInt32 Address  { get; init; }
 
-    public MemoryArgument(int address)
+    public MemoryArgument(UInt32 address)
     {
         Address = address;
     }
@@ -16,9 +16,9 @@ public class MemoryArgument : InstructionArgument
 
 public class ConstantArgument : InstructionArgument
 {
-    public int Value  { get; init; }
+    public UInt32 Value  { get; init; }
 
-    public ConstantArgument(int value)
+    public ConstantArgument(UInt32 value)
     {
         Value = value;
     }

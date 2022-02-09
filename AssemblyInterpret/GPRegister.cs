@@ -3,8 +3,8 @@
     public class GPRegister
     {
 
-        private int _register = 0;
-        public int Register
+        private UInt32 _register = 0;
+        public UInt32 Register
         {
             get => _register;
             set
@@ -13,17 +13,17 @@
             }
         }
         public string RegisterText => Convert.ToString(Register, 2).PadLeft(32, '0');
-        public short Half
+        public UInt16 Half
         {
             get
             {
-                return (short)_register;
+                return (UInt16)_register;
             }
             set
             {
                 _register = _register >> 16;
                 _register = _register << 16;
-                _register = _register | (int)value;
+                _register = _register | value;
             }
         }
         public string HalfText => Convert.ToString(Half, 2).PadLeft(16, '0');
@@ -50,9 +50,12 @@
             }
             set
             {
-                int temp = value << 8;
-                _register ^= temp;
-                _register |= temp;
+                UInt32 temp = _register >> 16;
+                temp <<= 8;
+                temp += value;
+                temp <<= 8;
+                temp += (byte)_register;
+                _register = temp;
             }
         }
         public string HigherHalfText => Convert.ToString(HigherHalf, 2).PadLeft(8, '0');

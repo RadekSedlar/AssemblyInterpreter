@@ -25,7 +25,7 @@ public class InstructionInterpreter
         _registers.Esp = _memory.MemorySize - 1;
     }
 
-    private (int, bool) ValueOfAddressPart(string addressPart)
+    private (UInt32, bool) ValueOfAddressPart(string addressPart)
     {
         var registerFindingResult = _registers.FindRegister(addressPart);
         if (registerFindingResult.Item1)
@@ -44,7 +44,7 @@ public class InstructionInterpreter
             return (_memory.ReadDoubleWord(globalVarFindingResult.Address), false);
         }
         
-        if (int.TryParse(addressPart, out int constantValue))
+        if (UInt32.TryParse(addressPart, out UInt32 constantValue))
         {
             return (constantValue, false);
         }
@@ -52,7 +52,7 @@ public class InstructionInterpreter
         throw new Exception($"'{addressPart}' could not be translated to address.");
     }
     
-    private int ResolveMemoryAddress(string addressText)
+    private UInt32 ResolveMemoryAddress(string addressText)
     {
         string[] addressParts = addressText.Split('+', '-');
         if (addressParts.Length == 1)
@@ -115,7 +115,7 @@ public class InstructionInterpreter
                 continue;
             }
 
-            if (int.TryParse(argument, out int constantValue))
+            if (UInt32.TryParse(argument, out UInt32 constantValue))
             {
                 // Is constant
                 instructionArguments.Add(new ConstantArgument(constantValue));
@@ -346,7 +346,7 @@ public class InstructionInterpreter
                     break;
                 case ByteCount.DW:
                     _registers.
-                        SetWordRegister(registerArgument1?.RegisterIdentifier ?? "", (Int16) (constantArgument2?.Value ?? 0));
+                        SetWordRegister(registerArgument1!.RegisterIdentifier,  (UInt16)(constantArgument2?.Value ?? 0));
                     break;
                 case ByteCount.DD:
                     _registers.
@@ -361,7 +361,10 @@ public class InstructionInterpreter
         // mov <mem>,<const>
         if (arguments[0] is MemoryArgument && arguments[1] is ConstantArgument)
         {
-           
+            var memoryArgument = (arguments[0] as MemoryArgument) ?? new MemoryArgument(0);
+            var constantArgument = (arguments[1] as ConstantArgument) ?? new ConstantArgument(0);   
+
+            _memory.SetDoubleWord(memoryArgument.Address, constantArgument.Value);
         }
     }
 }

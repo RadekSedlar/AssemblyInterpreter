@@ -1,25 +1,27 @@
 {
   "format": 1,
   "restore": {
-    "/home/radek/Repositories/AssemblyInterpreter/IterpretTests/IterpretTests.csproj": {}
+    "C:\\Users\\GAMEBOX\\source\\repos\\AssemblyInterpret\\IterpretTests\\IterpretTests.csproj": {}
   },
   "projects": {
-    "/home/radek/Repositories/AssemblyInterpreter/AssemblyInterpret/AssemblyInterpret.csproj": {
+    "C:\\Users\\GAMEBOX\\source\\repos\\AssemblyInterpret\\AssemblyInterpret\\AssemblyInterpret.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/radek/Repositories/AssemblyInterpreter/AssemblyInterpret/AssemblyInterpret.csproj",
+        "projectUniqueName": "C:\\Users\\GAMEBOX\\source\\repos\\AssemblyInterpret\\AssemblyInterpret\\AssemblyInterpret.csproj",
         "projectName": "AssemblyInterpret",
-        "projectPath": "/home/radek/Repositories/AssemblyInterpreter/AssemblyInterpret/AssemblyInterpret.csproj",
-        "packagesPath": "/home/radek/.nuget/packages/",
-        "outputPath": "/home/radek/Repositories/AssemblyInterpreter/AssemblyInterpret/obj/",
+        "projectPath": "C:\\Users\\GAMEBOX\\source\\repos\\AssemblyInterpret\\AssemblyInterpret\\AssemblyInterpret.csproj",
+        "packagesPath": "C:\\Users\\GAMEBOX\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\GAMEBOX\\source\\repos\\AssemblyInterpret\\AssemblyInterpret\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/radek/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\GAMEBOX\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -52,34 +54,36 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/6.0.101/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "/home/radek/Repositories/AssemblyInterpreter/IterpretTests/IterpretTests.csproj": {
+    "C:\\Users\\GAMEBOX\\source\\repos\\AssemblyInterpret\\IterpretTests\\IterpretTests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/radek/Repositories/AssemblyInterpreter/IterpretTests/IterpretTests.csproj",
+        "projectUniqueName": "C:\\Users\\GAMEBOX\\source\\repos\\AssemblyInterpret\\IterpretTests\\IterpretTests.csproj",
         "projectName": "IterpretTests",
-        "projectPath": "/home/radek/Repositories/AssemblyInterpreter/IterpretTests/IterpretTests.csproj",
-        "packagesPath": "/home/radek/.nuget/packages/",
-        "outputPath": "/home/radek/Repositories/AssemblyInterpreter/IterpretTests/obj/",
+        "projectPath": "C:\\Users\\GAMEBOX\\source\\repos\\AssemblyInterpret\\IterpretTests\\IterpretTests.csproj",
+        "packagesPath": "C:\\Users\\GAMEBOX\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\GAMEBOX\\source\\repos\\AssemblyInterpret\\IterpretTests\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/radek/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\GAMEBOX\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "/home/radek/Repositories/AssemblyInterpreter/AssemblyInterpret/AssemblyInterpret.csproj": {
-                "projectPath": "/home/radek/Repositories/AssemblyInterpreter/AssemblyInterpret/AssemblyInterpret.csproj"
+              "C:\\Users\\GAMEBOX\\source\\repos\\AssemblyInterpret\\AssemblyInterpret\\AssemblyInterpret.csproj": {
+                "projectPath": "C:\\Users\\GAMEBOX\\source\\repos\\AssemblyInterpret\\AssemblyInterpret\\AssemblyInterpret.csproj"
               }
             }
           }
@@ -130,7 +134,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/6.0.101/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     }
