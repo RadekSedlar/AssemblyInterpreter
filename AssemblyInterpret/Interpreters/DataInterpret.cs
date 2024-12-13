@@ -10,49 +10,38 @@ public class DataInterpret
         Memory = memory;
     }
 
-    internal void InterpretBytes(string name, string line)
+    internal void InterpretBytes(string name, string values)
     {
         Memory.AddGlobalVar(new MemoryCell(ByteCount.DB, name, Memory.TopPointer));
-        line = line.Replace(',',' ');
-        string[] values = line.Split(' ');
 
-        foreach (var token in values)
+
+        switch (values)
         {
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                continue;
-            }
-            
-            if (token.StartsWith('\'') && token.EndsWith('\''))
-            {
-                var literal = token.Trim('\'');
-                foreach (var character in literal)
-                {
-                    Memory.SetByte(Memory.TopPointer, (byte)character);
-                    Memory.TopPointer++;
-                }
-                continue;
-            }
-            
-            if (token == "?")
-            {
-                Memory.SetByte(Memory.TopPointer, 0);
-                Memory.TopPointer++;
-                continue;
-            }
-            
-            byte byteValue;
-            if (byte.TryParse(token, out byteValue))
-            {
-                Memory.SetByte(Memory.TopPointer, byteValue);
-                Memory.TopPointer++;
-            }
-            else
-            {
-                throw new Exception($"'{token}' is not byte value");
-            }
+            case [var singleValue]:
+
+                
+                
+                break;
+            case [var singleValue, var dupExpression]:
+                break;
         }
     }
+
+    private byte[] ConvertTextToByteValues(string valueText)
+    {
+        if (byte.TryParse(valueText, out byte singleValue))
+        {
+            return new[] {singleValue};
+        }
+
+        if (valueText is "?")
+        {
+            return new[] {byte.MinValue};
+        }
+        
+        return Array.Empty<byte>();
+    }
+    
     
     internal void InterpretWords(string name, string line)
     {
@@ -127,41 +116,27 @@ public class DataInterpret
             }
         }
     }
-    
-    public void InterpretLine(string line)
-    {
-        line = Regex.Replace(line, @"[;].*", "");
 
-        line = line.TrimStart();
+    private string StripCommentsAndTrimRawLineText(string rawLineText) =>
+        Regex.Replace(rawLineText, @"[;].*", "").Trim();
+    
+    public void InterpretLine(string rawLineText)
+    {
+        var line = StripCommentsAndTrimRawLineText(rawLineText);
+        
         if (line.Length == 0)
         {
             return;
         }
 
-        var nameReg = new Regex(@"^[a-zA-Z][a-zA-Z0-9]{0,}");
-        var nameMatch = nameReg.Match(line);
-        if (!nameMatch.Success)
-        {
-            throw new Exception($"Pattern '{line}' cannot be interpreted as variable name.");
-        }
+        var lineWords = line.Split(' ');
 
-        var varName = nameMatch.Value;
-        line = nameReg.Replace(line, "");
-
-        line = line.TrimStart();
-        var varSizeReg = new Regex(@"^[D][BWD]");
-        var varSizeMatch = varSizeReg.Match(line);
-        if (!varSizeMatch.Success)
-        {
-            throw new Exception($"Pattern '{line}' cannot be interpreted as variable size.");
-        }
-
-        line = varSizeReg.Replace(line, "");
         
-        switch (varSizeMatch.Value)
+        
+        switch (lineWords)
         {
-            case "DB":
-                InterpretBytes(varName, line.TrimStart());
+            case [var variableName, "DB", .. var tail]:
+                InterpretBytes(variableName, line.TrimStart());
                 break;
             case "DW":
                 break;

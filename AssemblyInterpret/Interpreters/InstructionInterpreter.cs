@@ -7,7 +7,6 @@ public class InstructionInterpreter
     private Dictionary<string, Action<string>> _instructions;
     private GlobalMemory _memory;
 
-    private bool _sizeExplicitlyStated = false;
     private ByteCount _instructionSize = ByteCount.DD;
     private Registers _registers;
 
@@ -135,7 +134,6 @@ public class InstructionInterpreter
         if (!sizeMatch.Success)
         {
             _instructionSize = ByteCount.DD;
-            _sizeExplicitlyStated = false;
             return line;
         }
 
@@ -154,7 +152,6 @@ public class InstructionInterpreter
                 break;
         }
 
-        _sizeExplicitlyStated = true;
         return line.Replace(sizeMatch.Value, "").Trim();
     }
     
@@ -198,11 +195,12 @@ public class InstructionInterpreter
             throw new Exception($"There is no PUSH instruction with {arguments.Count} arguments.");
         }
         
+        
         // push <reg32>
-        if (arguments[0] is RegisterArgument)
+        if (arguments is [RegisterArgument])
         {
-            var registerArgument = (arguments[0] as RegisterArgument) ?? new RegisterArgument("", ByteCount.DB);
-            if (registerArgument.ByteCount < ByteCount.DD)
+            var registerArgument = arguments[0] as RegisterArgument;
+            if (registerArgument!.ByteCount < ByteCount.DD)
             {
                 throw new Exception($"PUSH instruction needs double word register, not '{registerArgument.RegisterIdentifier}'.");
             }

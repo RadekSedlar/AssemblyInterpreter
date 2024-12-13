@@ -30,8 +30,25 @@ public class GlobalMemory
     {
         if (MemoryCells.Exists(x => x.Name == memoryCell.Name))
             throw new Exception("Global variable already exists");
+
+        TopPointer++;
         
         MemoryCells.Add(memoryCell);
+    }
+    
+    public void SetGlobalVar(string name, byte value) => SetByte(GetMemoryCellByName(name).Address, value);
+    public void SetGlobalVar(string name, UInt16 value) => SetWord(GetMemoryCellByName(name).Address, value);
+    public void SetGlobalVar(string name, UInt32 value) => SetDoubleWord(GetMemoryCellByName(name).Address, value);
+
+
+    private MemoryCell GetMemoryCellByName(string name)
+    {
+        var memoryCell = MemoryCells.FirstOrDefault(x => x.Name == name);
+        
+        if (memoryCell is null)
+            throw new Exception($"Global variable '{name}' does not exists");
+        
+        return memoryCell;
     }
     
     public MemoryCell? GetGlobalVar(string name)
