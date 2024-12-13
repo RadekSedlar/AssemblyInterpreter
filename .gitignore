@@ -1,5 +1,7 @@
 
 # To ignore all bin direstories
+.idea/
+obj/
 bin/
 AssemblyInterpret/obj/Debug
 
