@@ -32,11 +32,19 @@ class Program
         Console.WriteLine(memory.ReadDoubleWord(3));
 
         memory = new GlobalMemory(20);
-        DataInterpret dataInterpret = new DataInterpret(memory);
-        dataInterpret.InterpretLine("var DB 64 ;Declare a byte containing the value 64. Label the");
-        dataInterpret.InterpretLine("; memory location “var”.");
-        dataInterpret.InterpretLine("str DB 'hello',0 ; Declare 5 bytes starting at the address “str”");
-        dataInterpret.InterpretLine("neco DB 9 ; Declare 5 bytes starting at the address “str”");
+        DataInterpret dataInterpret = new DataInterpret(memory, """
+                                                                var DB 64 ;Declare a byte containing the value 64. Label the
+                                                                ; memory location “var”.
+                                                                str DB 'hello',0 ; Declare 5 bytes starting at the address “str”
+                                                                neco DB 9 
+                                                                DB 9 
+                                                                DB 9 
+                                                                DW 9 
+                                                                DW 9
+                                                                DD 9
+                                                                DD 9 
+                                                                """);
+        dataInterpret.InterpretDataSection();
         memory.PrintMemory();
 
 

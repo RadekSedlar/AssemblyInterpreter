@@ -1,8 +1,10 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003ANullable_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FAppData_003FRoaming_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FSourcesCache_003F5acc345db3c207bc9d886a36ff14867ef8d65557432172c2a42f19aeac04d1b_003FNullable_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=2adb9438_002D6345_002D4213_002Db248_002Df54b01d3e691/@EntryIndexedValue">&lt;SessionState ContinuousTestingIsOn="True" ContinuousTestingMode="1" IsActive="True" Name="Push5_32Register_EsiDecrementedAnd5Pushed" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;xUnit::E1972396-CFEF-446A-AAF4-53CACFB2E624::net6.0::IterpretTests.InstructionPushTests&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;xUnit::E1972396-CFEF-446A-AAF4-53CACFB2E624::net6.0::IterpretTests.InstructionMovTests.Mov_Reg32ToReg32_ValueMoved&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;xUnit::E1972396-CFEF-446A-AAF4-53CACFB2E624::net6.0::IterpretTests.InstructionMovTests&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
-&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Monitoring/StartMode/@EntryValue">Disabled</s:String></wpf:ResourceDictionary>

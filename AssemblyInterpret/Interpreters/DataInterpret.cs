@@ -1,150 +1,181 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text;
+using System.Text.RegularExpressions;
 namespace AssemblyInterpret.Interpreters;
+
 
 
 public class DataInterpret
 {
     public GlobalMemory Memory { get; init; }
-    public DataInterpret(GlobalMemory memory)
+    public DataSectionScanner SectionScanner { get; init; }
+    public DataInterpret(GlobalMemory memory, string dataSectionText)
     {
         Memory = memory;
-    }
+        var sb = new StringBuilder();
+        var lines = dataSectionText.Split(Environment.NewLine);
 
-    internal void InterpretBytes(string name, string values)
-    {
-        Memory.AddGlobalVar(new MemoryCell(ByteCount.DB, name, Memory.TopPointer));
-
-
-        switch (values)
+        foreach (var line in lines)
         {
-            case [var singleValue]:
-
-                
-                
-                break;
-            case [var singleValue, var dupExpression]:
-                break;
-        }
-    }
-
-    private byte[] ConvertTextToByteValues(string valueText)
-    {
-        if (byte.TryParse(valueText, out byte singleValue))
-        {
-            return new[] {singleValue};
+            sb.AppendLine(StripCommentsAndTrimRawLineText(line));
         }
 
-        if (valueText is "?")
+        SectionScanner = new DataSectionScanner(sb.ToString());
+    }
+
+    internal void InterpretBytes(string? variableName)
+    {
+        if (variableName is not null)
         {
-            return new[] {byte.MinValue};
+            Memory.AddGlobalVar(new MemoryCell(ByteCount.DB, variableName, Memory.TopPointer));
         }
         
-        return Array.Empty<byte>();
-    }
-    
-    
-    internal void InterpretWords(string name, string line)
-    {
-        Memory.AddGlobalVar(new MemoryCell(ByteCount.DW, name, Memory.TopPointer));
-        line = line.Replace(',',' ');
-        string[] values = line.Split(' ');
+        var values = GetValues(false);
 
-        foreach (var token in values)
+        foreach (var value in values)
         {
-            if (token.StartsWith('\'') && token.EndsWith('\''))
-            {
-                var literal = token.Trim('\'');
-                foreach (var character in literal)
-                {
-                    Memory.SetWord(Memory.TopPointer, (UInt16)character);
-                    Memory.TopPointer += 2;
-                }
-            }
-            
-            if (token == "?")
-            {
-                Memory.SetWord(Memory.TopPointer, 0);
-                Memory.TopPointer += 2;
-            }
-            
-            UInt16 wordValue;
-            if (UInt16.TryParse(token, out wordValue))
-            {
-                Memory.SetWord(Memory.TopPointer, wordValue);
-                Memory.TopPointer += 2;
-            }
-            else
-            {
-                throw new Exception($"'{token}' is not word value");
-            }
+            Memory.SetByte(Memory.TopPointer, (byte)value);
+            Memory.TopPointer++;
         }
     }
     
-    internal void InterpretDoubleWords(string name, string line)
+    internal void InterpretWords(string? variableName)
     {
-        Memory.AddGlobalVar(new MemoryCell(ByteCount.DD, name, Memory.TopPointer));
-        line = line.Replace(',',' ');
-        string[] values = line.Split(' ');
-
-        foreach (var token in values)
+        if (variableName is not null)
         {
-            if (token.StartsWith('\'') && token.EndsWith('\''))
-            {
-                var literal = token.Trim('\'');
-                foreach (var character in literal)
-                {
-                    Memory.SetDoubleWord(Memory.TopPointer, character);
-                    Memory.TopPointer += 4;
-                }
-            }
-            
-            if (token == "?")
-            {
-                Memory.SetDoubleWord(Memory.TopPointer, 0);
-                Memory.TopPointer += 4;
-            }
-            
-            UInt32 doubleWordValue;
-            if (UInt32.TryParse(token, out doubleWordValue))
-            {
-                Memory.SetDoubleWord(Memory.TopPointer, doubleWordValue);
-                Memory.TopPointer += 4;
-            }
-            else
-            {
-                throw new Exception($"'{token}' is not double word value");
-            }
+            Memory.AddGlobalVar(new MemoryCell(ByteCount.DW, variableName, Memory.TopPointer));
+        }
+        
+        var values = GetValues(false);
+
+        foreach (var value in values)
+        {
+            Memory.SetWord(Memory.TopPointer, (UInt16)value);
+            Memory.TopPointer++;
         }
     }
+    
+    internal void InterpretDoubleWords(string? variableName)
+    {
+        if (variableName is not null)
+        {
+            Memory.AddGlobalVar(new MemoryCell(ByteCount.DW, variableName, Memory.TopPointer));
+        }
+        
+        var values = GetValues(false);
+
+        foreach (var value in values)
+        {
+            Memory.SetDoubleWord(Memory.TopPointer, (uint)value);
+            Memory.TopPointer++;
+        }
+    }
+
+   
 
     private string StripCommentsAndTrimRawLineText(string rawLineText) =>
         Regex.Replace(rawLineText, @"[;].*", "").Trim();
-    
-    public void InterpretLine(string rawLineText)
+
+
+    private void InterpretVariable(string variableNameLexeme)
     {
-        var line = StripCommentsAndTrimRawLineText(rawLineText);
-        
-        if (line.Length == 0)
-        {
-            return;
-        }
+        var token = SectionScanner.GetToken();
 
-        var lineWords = line.Split(' ');
-
-        
-        
-        switch (lineWords)
+        switch (token.Type)
         {
-            case [var variableName, "DB", .. var tail]:
-                InterpretBytes(variableName, line.TrimStart());
+            case DataSectionTokenType.KeywordDataDoubleWord:
+                InterpretDoubleWords(variableNameLexeme);
                 break;
-            case "DW":
+            case DataSectionTokenType.KeywordDataWord:
+                InterpretWords(variableNameLexeme);
                 break;
-            case "DD":
+            case DataSectionTokenType.KeywordDataByte:
+                InterpretBytes(variableNameLexeme);
                 break;
             default:
-                throw new Exception($"'{varSizeMatch.Value}' is not var size.");
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    private List<int> GetValues(bool firstLevelOfRecursion = true)
+    {
+        var firstToken = SectionScanner.GetToken();
+        List<int> values = firstToken switch
+        {
+            {Type: DataSectionTokenType.EmptyValue} => [0],
+            {Type: DataSectionTokenType.Number} => [int.Parse(firstToken.Lexeme ?? "0")],
+            {Type: DataSectionTokenType.StringLiteral} => firstToken.Lexeme!
+                .Skip(1)
+                .Take(firstToken.Lexeme!.Length-2)
+                .Select(x=>(int)x)
+                .ToList(),
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        var secondToken = SectionScanner.GetToken();
+
+        if (firstLevelOfRecursion && secondToken.Type is DataSectionTokenType.KeywordDup)
+        {
+            var probablyStartingBracket = SectionScanner.GetToken();
+            var probablyNumber = SectionScanner.GetToken();
+            var probablyEndingBracket = SectionScanner.GetToken();
+
+            if (probablyStartingBracket.Type == DataSectionTokenType.BracketStart &&
+                probablyNumber.Type == DataSectionTokenType.Number &&
+                probablyEndingBracket.Type == DataSectionTokenType.BracketEnd)
+            {
+                var numberOfRepetitions = int.Parse(firstToken.Lexeme ?? "0");
+                var valueOfRepetition = int.Parse(probablyNumber.Lexeme ?? "0");
+                
+                return Enumerable.Repeat(valueOfRepetition, numberOfRepetitions).ToList();
+            }
+            
+            if (probablyStartingBracket.Type == DataSectionTokenType.BracketStart &&
+                probablyNumber.Type == DataSectionTokenType.EmptyValue &&
+                probablyEndingBracket.Type == DataSectionTokenType.BracketEnd)
+            {
+                var numberOfRepetitions = int.Parse(firstToken.Lexeme ?? "0");
+                
+                return Enumerable.Repeat(0, numberOfRepetitions).ToList();
+            }
         }
         
+        if (secondToken.Type is DataSectionTokenType.Separator)
+        {
+            values.AddRange(GetValues(false));
+            return values;
+        }
+
+        SectionScanner.ReturnToken(secondToken);
+
+        return values;
+    }
+    
+    public void InterpretDataSection()
+    {
+        while (true)
+        {
+            var token = SectionScanner.GetToken();
+            switch (token.Type)
+            {
+                case DataSectionTokenType.Newline:
+                    break;
+                case DataSectionTokenType.Word:
+                    InterpretVariable(token.Lexeme ?? "");
+                    break;
+                case DataSectionTokenType.KeywordDataDoubleWord:
+                    InterpretDoubleWords(null);
+                    break;
+                case DataSectionTokenType.KeywordDataWord:
+                    InterpretWords(null);
+                    break;
+                case DataSectionTokenType.KeywordDataByte:
+                    InterpretBytes(null);
+                    break;
+                case DataSectionTokenType.Eof:
+                    return;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
     }
 }

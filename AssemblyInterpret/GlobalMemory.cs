@@ -30,9 +30,6 @@ public class GlobalMemory
     {
         if (MemoryCells.Exists(x => x.Name == memoryCell.Name))
             throw new Exception("Global variable already exists");
-
-        TopPointer++;
-        
         MemoryCells.Add(memoryCell);
     }
     
