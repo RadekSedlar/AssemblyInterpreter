@@ -1,5 +1,7 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
+using AssemblyInterpret.Scanners.DataSection;
+
 namespace AssemblyInterpret.Interpreters;
 
 
@@ -20,6 +22,7 @@ public class DataInterpret
         }
 
         SectionScanner = new DataSectionScanner(sb.ToString());
+        SectionScanner.Scan();
     }
 
     internal void InterpretBytes(string? variableName)
@@ -50,7 +53,7 @@ public class DataInterpret
         foreach (var value in values)
         {
             Memory.SetWord(Memory.TopPointer, (UInt16)value);
-            Memory.TopPointer++;
+            Memory.TopPointer += 2;
         }
     }
     
@@ -66,7 +69,7 @@ public class DataInterpret
         foreach (var value in values)
         {
             Memory.SetDoubleWord(Memory.TopPointer, (uint)value);
-            Memory.TopPointer++;
+            Memory.TopPointer += 4;
         }
     }
 

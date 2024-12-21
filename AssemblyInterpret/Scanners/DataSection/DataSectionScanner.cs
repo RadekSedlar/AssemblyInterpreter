@@ -1,39 +1,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace AssemblyInterpret;
-
-
-public class UnexpectedCharacterException : Exception
-{
-    public UnexpectedCharacterException(
-        DataSectionTokenType tokenTypeTryingToCreate,
-        char unexpectedCharacter, 
-        int line, 
-        int column) : base($"There is unexpected character > {unexpectedCharacter} < on position ({line},{column}) while trying to create {tokenTypeTryingToCreate}.")
-    {
-        
-    }
-}
-
-public enum DataSectionTokenType
-{
-    Newline,
-    StringLiteral,
-    Word,
-    KeywordDataByte,
-    KeywordDataWord,
-    KeywordDataDoubleWord,
-    KeywordDup,
-    Number,
-    EmptyValue,
-    Separator,
-    BracketStart,
-    BracketEnd,
-    Eof
-}
-
-public record DataSectionToken(DataSectionTokenType Type, string Lexeme, int Line, int Column);
+namespace AssemblyInterpret.Scanners.DataSection;
 
 public class DataSectionScanner
 {
@@ -98,8 +66,13 @@ public class DataSectionScanner
                 case null:
                     _tokens.Add(new DataSectionToken(DataSectionTokenType.Eof, "", _currentLine, _currentColumn));
                     return;
-                case '\n': // TODO \r\n
-                    _tokens.Add(new DataSectionToken(DataSectionTokenType.Newline, "\n", _currentLine, _currentColumn));
+                case '\r': // TODO \r\n
+                    var newLine = GetCharacter();
+                    if (newLine != '\n')
+                    {
+                        return;
+                    }
+                    _tokens.Add(new DataSectionToken(DataSectionTokenType.Newline, "\r\n", _currentLine, _currentColumn));
                     _currentLine++;
                     _currentColumn = 0;
                     break;

@@ -31,7 +31,7 @@ class Program
         Console.WriteLine(memory.ReadWord(1));
         Console.WriteLine(memory.ReadDoubleWord(3));
 
-        memory = new GlobalMemory(20);
+        memory = new GlobalMemory(40);
         DataInterpret dataInterpret = new DataInterpret(memory, """
                                                                 var DB 64 ;Declare a byte containing the value 64. Label the
                                                                 ; memory location “var”.
