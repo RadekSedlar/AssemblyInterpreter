@@ -4,8 +4,6 @@ using AssemblyInterpret.Scanners.DataSection;
 
 namespace AssemblyInterpret.Interpreters;
 
-
-
 public class DataInterpret
 {
     public GlobalMemory Memory { get; init; }

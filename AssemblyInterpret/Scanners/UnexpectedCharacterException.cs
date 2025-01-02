@@ -1,4 +1,6 @@
-namespace AssemblyInterpret.Scanners.DataSection;
+using AssemblyInterpret.Scanners.DataSection;
+
+namespace AssemblyInterpret.Scanners;
 
 public class UnexpectedCharacterException : Exception
 {
