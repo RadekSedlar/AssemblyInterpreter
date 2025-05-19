@@ -20,7 +20,7 @@ public class GlobalMemory
         {
             if ((i % 16) == 0)
             {
-                Console.Write("\n{0:X4} => ", i);
+                Console.Write("\n0_x{0:X4} => ", i);
             }
             Console.Write(" {0:X2}", _memory[i]);
         }

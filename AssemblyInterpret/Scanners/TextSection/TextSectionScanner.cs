@@ -32,7 +32,7 @@ public class TextSectionScanner
 
     public void ReturnToken(TextSectionToken token)
     {
-        _tokens.Add(token);
+        _tokens = [token, .._tokens];
     }
 
     private char? GetCharacter()

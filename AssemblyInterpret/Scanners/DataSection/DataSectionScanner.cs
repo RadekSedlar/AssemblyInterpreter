@@ -32,7 +32,7 @@ public class DataSectionScanner
 
     public void ReturnToken(DataSectionToken token)
     {
-        _tokens.Add(token);
+        _tokens = [token, .._tokens];
     }
 
     private char? GetCharacter()

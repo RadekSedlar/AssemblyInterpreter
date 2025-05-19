@@ -166,16 +166,16 @@
 
         #endregion
         
-        public Dictionary<string, GPRegister> GPRegisters = new Dictionary<string, GPRegister>()
+        public Dictionary<string, GpRegister> GPRegisters = new Dictionary<string, GpRegister>()
         {
-            {"eax", new GPRegister() },
-            {"ebx", new GPRegister() },
-            {"ecx", new GPRegister() },
-            {"edx", new GPRegister() },
-            {"esi", new GPRegister() },
-            {"edi", new GPRegister() },
-            {"esp", new GPRegister() },
-            {"ebp", new GPRegister() }
+            {"eax", new GpRegister() },
+            {"ebx", new GpRegister() },
+            {"ecx", new GpRegister() },
+            {"edx", new GpRegister() },
+            {"esi", new GpRegister() },
+            {"edi", new GpRegister() },
+            {"esp", new GpRegister() },
+            {"ebp", new GpRegister() }
 
         };
 

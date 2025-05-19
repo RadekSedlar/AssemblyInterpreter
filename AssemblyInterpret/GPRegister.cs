@@ -1,6 +1,6 @@
 ﻿namespace AssemblyInterpret
 {
-    public class GPRegister
+    public class GpRegister
     {
 
         private UInt32 _register = 0;
@@ -59,5 +59,20 @@
             }
         }
         public string HigherHalfText => Convert.ToString(HigherHalf, 2).PadLeft(8, '0');
+    }
+
+    public static class GpRegistersExtensions
+    {
+        public static GpRegister GetGpRegisterByName(this Dictionary<string, GpRegister> registers, string name)
+        {
+            var wasRegisterFound = registers.TryGetValue(name, out GpRegister? register);
+
+            if (!wasRegisterFound || register is null)
+            {
+                throw new KeyNotFoundException($"There is no such register: {name}");
+            }
+            
+            return register;
+        }
     }
 }

@@ -4,7 +4,7 @@ using AssemblyInterpret.Interpreters;
 
 class Program
 {
-    public static void WriteRegisters(GPRegister register)
+    public static void WriteRegisters(GpRegister register)
     {
         Console.WriteLine(new String('+', 45));
         Console.WriteLine($" EAX => {register.RegisterText} | {register.Register}");
@@ -55,5 +55,18 @@ class Program
             Console.Write("{0}", (char)memory.ReadByte(strAddress + i));
         }
         Console.WriteLine();
+        
+        
+        
+        registers.Eax = 1;
+        registers.Ebx = 2;
+        dataInterpret.InterpretDataSection();
+        TextInterpreter textInterpreter = new TextInterpreter(memory, """
+                                                                      add eax ebx
+                                                                      add ebx [14]
+                                                                      """,registers.GPRegisters);
+        textInterpreter.InterpretSection();
+        WriteRegisters(registers.GPRegisters["eax"]);
+        Console.WriteLine("END");
     }
 }
