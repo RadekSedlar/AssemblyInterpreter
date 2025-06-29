@@ -166,19 +166,44 @@
 
         #endregion
         
-        public Dictionary<string, GpRegister> GPRegisters = new Dictionary<string, GpRegister>()
+        public Dictionary<string, GpRegister> GPRegisters { get; init; }
+
+        public Registers()
         {
-            {"eax", new GpRegister() },
-            {"ebx", new GpRegister() },
-            {"ecx", new GpRegister() },
-            {"edx", new GpRegister() },
-            {"esi", new GpRegister() },
-            {"edi", new GpRegister() },
-            {"esp", new GpRegister() },
-            {"ebp", new GpRegister() }
+            var eaxRegister = new GpRegister();
+            var ebxRegister = new GpRegister();
+            var ecxRegister = new GpRegister();
+            var edxRegister = new GpRegister();
+            var esiRegister = new GpRegister();
+            var ediRegister = new GpRegister();
+            var espRegister = new GpRegister();
+            var ebpRegister = new GpRegister();
 
-        };
-
+            GPRegisters = new Dictionary<string, GpRegister>()
+            {
+                {"eax", eaxRegister},
+                {"ax", eaxRegister},
+                {"al", eaxRegister},
+                {"ah", eaxRegister},
+                {"ebx", ebxRegister},
+                {"bx", ebxRegister},
+                {"bl", ebxRegister},
+                {"bh", ebxRegister},
+                {"ecx", ecxRegister},
+                {"cx", ecxRegister},
+                {"cl", ecxRegister},
+                {"ch", ecxRegister},
+                {"edx", edxRegister},
+                {"dx", edxRegister},
+                {"dl", edxRegister},
+                {"dh", edxRegister},
+                {"esi", esiRegister},
+                {"edi", ediRegister},
+                {"esp", espRegister},
+                {"ebp", ebpRegister}
+            };
+        }
+        
         public void SetDoubleWordRegister(string registerIdentifier, UInt32 value)
         {
             switch (registerIdentifier)

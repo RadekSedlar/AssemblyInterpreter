@@ -95,7 +95,7 @@ public class TextSectionScanner
                     _tokens.Add(new TextSectionToken(TextSectionTokenType.SqBracketClose, "]", _currentLine, _currentColumn));
                     break;
                 case (>= 'a' and <= 'z') or (>= 'A' and <= 'Z'): 
-                    _tokens.Add(GenerateWord(currentCharacter.Value));
+                    _tokens.Add(GenerateWordOfLabel(currentCharacter.Value));
                     break;
                 case (>= '0' and <= '9'): 
                     _tokens.Add(GenerateNumber(currentCharacter.Value));
@@ -108,7 +108,7 @@ public class TextSectionScanner
 
     
 
-    private TextSectionToken GenerateWord(char startingChar)
+    private TextSectionToken GenerateWordOfLabel(char startingChar)
     {
         var sb = new StringBuilder($"{startingChar}");
 

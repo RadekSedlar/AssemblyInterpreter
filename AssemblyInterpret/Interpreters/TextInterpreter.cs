@@ -4,12 +4,20 @@ using AssemblyInterpret.Scanners.TextSection;
 
 namespace AssemblyInterpret.Interpreters;
 
+
+/// <summary>
+/// Need to iplement
+/// 1. explicit instruction size, for memory to memory operations.
+/// 2. labels
+/// 3. jmp
+/// 4. cmp
+/// </summary>
 public class TextInterpreter
 {
     public GlobalMemory Memory { get; init; }
     public TextSectionScanner SectionScanner { get; init; }
-    public Dictionary<string, GpRegister> Registers { get; init; }
-    public TextInterpreter(GlobalMemory memory, string textSectionText, Dictionary<string, GpRegister> registers)
+    public Registers Registers { get; init; }
+    public TextInterpreter(GlobalMemory memory, string textSectionText,Registers registers)
     {
         Memory = memory;
         Registers = registers;
@@ -75,37 +83,139 @@ public class TextInterpreter
 
         if (firstArgument.Type is ArgumentType.Register && secondArgument.Type is ArgumentType.Register)
         {
-            var finalRegister = Registers.GetGpRegisterByName(firstArgument.Lexeme);
-            var addedRegister = Registers.GetGpRegisterByName(secondArgument.Lexeme);
-            finalRegister.Register += addedRegister.Register;
-            /*
-             * "eax" or "ebx" or "ecx" or "edx" => (int)register.Register,
-            "ax" or "bx" or "cx" or "dx" => register.Half,
-            "al" or "bl" or "cl" or "dl"=> register.LowerHalf,
-            "ah" or "bh" or "ch" or "dh" => register.HigherHalf,
-             */
+            if (firstArgument.Bytes != secondArgument.Bytes)
+            {
+                throw new Exception("Registers of different sizes were used");
+            }
+
+            if (firstArgument.Bytes is ByteCount.DB)
+            {
+                byte firstRegisterValue = Registers.GetByteRegister(firstArgument.Lexeme);
+                byte secondRegisterValue = Registers.GetByteRegister(secondArgument.Lexeme);
+                
+                Registers.SetByteRegister(firstArgument.Lexeme, (byte)(firstRegisterValue + secondRegisterValue));
+            }
+            
+            if (firstArgument.Bytes is ByteCount.DW)
+            {
+                ushort firstRegisterValue = Registers.GetWordRegister(firstArgument.Lexeme);
+                ushort secondRegisterValue = Registers.GetWordRegister(secondArgument.Lexeme);
+                
+                Registers.SetWordRegister(firstArgument.Lexeme, (ushort)(firstRegisterValue + secondRegisterValue));
+            }
+            
+            if (firstArgument.Bytes is ByteCount.DD)
+            {
+                uint firstRegisterValue = Registers.GetDoubleWordRegister(firstArgument.Lexeme);
+                uint secondRegisterValue = Registers.GetDoubleWordRegister(secondArgument.Lexeme);
+                
+                Registers.SetDoubleWordRegister(firstArgument.Lexeme, firstRegisterValue + secondRegisterValue);
+            }
             
             return;
         }
         
         if (firstArgument.Type is ArgumentType.Register && secondArgument.Type is ArgumentType.Address)
         {
-            var finalRegister = Registers.GetGpRegisterByName(firstArgument.Lexeme);
-            var valueFromMemory = Memory.ReadDoubleWord((uint) secondArgument.Value);
-            finalRegister.Register += valueFromMemory;
-            return;
+            if (firstArgument.Bytes is ByteCount.DB)
+            {
+                byte firstRegisterValue = Registers.GetByteRegister(firstArgument.Lexeme);
+                byte secondMemoryValue = Memory.ReadByte(secondArgument.Value);
+                
+                Registers.SetByteRegister(firstArgument.Lexeme, (byte)(firstRegisterValue + secondMemoryValue));
+                return;
+            }
+            
+            if (firstArgument.Bytes is ByteCount.DW)
+            {
+                ushort firstRegisterValue = Registers.GetWordRegister(firstArgument.Lexeme);
+                ushort secondMemoryValue = Memory.ReadWord(secondArgument.Value);
+                
+                Registers.SetWordRegister(firstArgument.Lexeme, (ushort)(firstRegisterValue + secondMemoryValue));
+                return;
+            }
+            
+            if (firstArgument.Bytes is ByteCount.DD)
+            {
+                uint firstRegisterValue = Registers.GetDoubleWordRegister(firstArgument.Lexeme);
+                uint secondMemoryValue = Memory.ReadDoubleWord(secondArgument.Value);
+                
+                Registers.SetDoubleWordRegister(firstArgument.Lexeme, firstRegisterValue + secondMemoryValue);
+                return;
+            }
         }
         
+        if (firstArgument.Type is ArgumentType.Address && secondArgument.Type is ArgumentType.Register)
+        {
+            if (secondArgument.Bytes is ByteCount.DB)
+            {
+                byte firstMemoryValue = Memory.ReadByte(firstArgument.Value);
+                byte secondRegisterValue = Registers.GetByteRegister(secondArgument.Lexeme);
+                
+                Memory.SetByte(firstArgument.Value, (byte)(firstMemoryValue + secondRegisterValue));
+                return;
+            }
+            
+            if (secondArgument.Bytes is ByteCount.DW)
+            {
+                ushort firstMemoryValue = Memory.ReadWord(firstArgument.Value);
+                ushort secondRegisterValue = Registers.GetWordRegister(secondArgument.Lexeme);
+                
+                Memory.SetWord(firstArgument.Value, (ushort)(firstMemoryValue + secondRegisterValue));
+                return;
+            }
+            
+            if (secondArgument.Bytes is ByteCount.DD)
+            {
+                uint firstMemoryValue = Memory.ReadDoubleWord(firstArgument.Value);
+                uint secondRegisterValue = Registers.GetDoubleWordRegister(secondArgument.Lexeme);
+                
+                Memory.SetDoubleWord(firstArgument.Value, (uint)(firstMemoryValue + secondRegisterValue));
+                return;
+            }
+        }
+        
+        if (firstArgument.Type is ArgumentType.Address && secondArgument.Type is ArgumentType.Address)
+        {
+            if (firstArgument.Bytes is ByteCount.DB)
+            {
+                byte firstMemoryValue = Memory.ReadByte(firstArgument.Value);
+                byte secondMemoryValue = Memory.ReadByte(secondArgument.Value);
+                
+                Memory.SetByte(firstArgument.Value, (byte)(firstMemoryValue + secondMemoryValue));
+                return;
+            }
+            
+            if (firstArgument.Bytes is ByteCount.DW)
+            {
+                ushort firstMemoryValue = Memory.ReadWord(firstArgument.Value);
+                ushort secondMemoryValue = Memory.ReadWord(secondArgument.Value);
+                
+                Memory.SetWord(firstArgument.Value, (ushort)(firstMemoryValue + secondMemoryValue));
+                return;
+            }
+            
+            if (firstArgument.Bytes is ByteCount.DD)
+            {
+                uint firstMemoryValue = Memory.ReadDoubleWord(firstArgument.Value);
+                uint secondMemoryValue = Memory.ReadDoubleWord(secondArgument.Value);
+                
+                Memory.SetDoubleWord(firstArgument.Value, (uint)(firstMemoryValue + secondMemoryValue));
+                return;
+            }
+        }
+        
+        throw new NotImplementedException();
     }
 
-    private int InterpretValueOfAddress(
+    private uint InterpretValueOfAddress(
         int numberOfRegistersThatCanBeUsed,
         bool canBeConstantUsed,
         bool canBeRegisterPremultiplied,
         bool wasLastInterpretedAddressPartRegister,
-        int tempValueOfAddress)
+        uint tempValueOfAddress)
     {
-        (bool wasRegisterUsed, bool wasConstantUsed, bool wasRegisterPremultiplied, int valueOfExpression, bool addressEnd) = InterpretPartOfAddress();
+        (bool wasRegisterUsed, bool wasConstantUsed, bool wasRegisterPremultiplied, uint valueOfExpression, bool addressEnd) = InterpretPartOfAddress();
 
         if (canBeConstantUsed is false && wasConstantUsed)
         {
@@ -193,14 +303,15 @@ public class TextInterpreter
         bool wasRegisterUsed,
         bool wasConstantUsed,
         bool wasRegisterPremultiplied,
-        int valueOfExpression,
+        uint valueOfExpression,
         bool addressEnd) InterpretPartOfAddress()
     {
         var token = SectionScanner.GetToken();
         
         if (token.Type == TextSectionTokenType.Register)
         {
-            return (true, false, false,GetValueFromRegisterOrThrow(token.Lexeme), CheckIfAddressEnded());
+            var (valueFromRegister, _) = GetValueFromRegisterOrThrow(token.Lexeme);
+            return (true, false, false, valueFromRegister, CheckIfAddressEnded());
         }
 
         if (token.Type == TextSectionTokenType.Number)
@@ -209,13 +320,14 @@ public class TextInterpreter
             var registerCheckToken = SectionScanner.GetToken();
             if (timesCheckToken.Type == TextSectionTokenType.Times && registerCheckToken.Type == TextSectionTokenType.Register)
             {
-                return (true, false, true, GetValueFromRegisterOrThrow(registerCheckToken.Lexeme), CheckIfAddressEnded());
+                var (valueFromRegister, _) = GetValueFromRegisterOrThrow(registerCheckToken.Lexeme);
+                return (true, false, true, valueFromRegister, CheckIfAddressEnded());
             }
             
             SectionScanner.ReturnToken(registerCheckToken);
             SectionScanner.ReturnToken(timesCheckToken);
             
-            return (false, true, false, int.Parse(token.Lexeme), CheckIfAddressEnded());
+            return (false, true, false, uint.Parse(token.Lexeme), CheckIfAddressEnded());
         }
         
         throw new UnexpectedTokenTypeException($"{nameof(TextSectionTokenType.Number)} or {nameof(TextSectionTokenType.Register)} was expected. '{token.Type} was given.");
@@ -233,9 +345,9 @@ public class TextInterpreter
         return false;
     }
 
-    private int GetValueFromRegisterOrThrow(string registerName)
+    private (uint, ByteCount) GetValueFromRegisterOrThrow(string registerName)
     {
-        var isRegisterFound = Registers.TryGetValue(registerName, out GpRegister? register);
+        var isRegisterFound = Registers.GPRegisters.TryGetValue(registerName, out GpRegister? register);
         if (!isRegisterFound)
         {
             throw new Exception($"Unknown register '{registerName}'.");
@@ -248,10 +360,10 @@ public class TextInterpreter
 
         return registerName switch
         {
-            "eax" or "ebx" or "ecx" or "edx" => (int)register.Register,
-            "ax" or "bx" or "cx" or "dx" => register.Half,
-            "al" or "bl" or "cl" or "dl"=> register.LowerHalf,
-            "ah" or "bh" or "ch" or "dh" => register.HigherHalf,
+            "eax" or "ebx" or "ecx" or "edx" => (register.Register, ByteCount.DD),
+            "ax" or "bx" or "cx" or "dx" => (register.Half, ByteCount.DW),
+            "al" or "bl" or "cl" or "dl"=> (register.LowerHalf, ByteCount.DB),
+            "ah" or "bh" or "ch" or "dh" => (register.HigherHalf,ByteCount.DB),
             _ => throw new ArgumentOutOfRangeException(nameof(registerName), registerName, null)
         };
     }
@@ -263,16 +375,27 @@ public class TextInterpreter
         {
             var token = SectionScanner.GetToken();
 
+            uint value;
+            ByteCount byteCount;
+            
             switch (token.Type)
             {
                 case TextSectionTokenType.Register:
-                    arguments.Add(new Argument(GetValueFromRegisterOrThrow(token.Lexeme), ArgumentType.Register, token.Lexeme));
+                    (value, byteCount) = GetValueFromRegisterOrThrow(token.Lexeme);
+                    arguments.Add(new Argument(value, ArgumentType.Register, token.Lexeme, byteCount));
                     break;
                 case TextSectionTokenType.Number:
-                    arguments.Add(new Argument(int.Parse(token.Lexeme), ArgumentType.Value, token.Lexeme));
+                    value = uint.Parse(token.Lexeme);
+                    byteCount = value switch
+                    {
+                        <= 255 => ByteCount.DB,
+                        65535 => ByteCount.DW,
+                        _ => ByteCount.DD,
+                    };
+                    arguments.Add(new Argument(value, ArgumentType.Value, token.Lexeme, byteCount));
                     break;
                 case TextSectionTokenType.SqBracketOpen:
-                    arguments.Add(new Argument(InterpretValueOfAddress(2, true, true, false, 0), ArgumentType.Address, token.Lexeme));
+                    arguments.Add(new Argument(InterpretValueOfAddress(2, true, true, false, 0), ArgumentType.Address, token.Lexeme, ByteCount.DB));
                     break;
                 case TextSectionTokenType.NewLine:
                     return arguments;
@@ -285,15 +408,17 @@ public class TextInterpreter
 
 public class Argument
 {
-    public int Value { get; init; }
+    public uint Value { get; init; }
     public string Lexeme { get; init; }
     public ArgumentType Type { get; init; }
+    public ByteCount Bytes { get; init; }
 
-    public Argument(int value, ArgumentType type, string lexeme)
+    public Argument(uint value, ArgumentType type, string lexeme, ByteCount bytes)
     {
         Value = value;
         Type = type;
         Lexeme = lexeme;
+        Bytes = bytes;
     }
 }
 

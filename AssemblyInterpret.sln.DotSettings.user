@@ -9,6 +9,8 @@
       &lt;TestId&gt;xUnit::AE6D2F6A-C97C-4A50-A192-05DED2E17523::net8.0::Tests.RegistersTests&lt;/TestId&gt;&#xD;
       &lt;TestId&gt;xUnit::AE6D2F6A-C97C-4A50-A192-05DED2E17523::net8.0::Tests.GlobalMemoryTests&lt;/TestId&gt;&#xD;
       &lt;TestId&gt;xUnit::AE6D2F6A-C97C-4A50-A192-05DED2E17523::net8.0::Tests.DataInterpreterTests&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::AE6D2F6A-C97C-4A50-A192-05DED2E17523::net8.0::Tests.TextInterpreterTests.Interpret_Add_Register_Register_Should_Have_Added_Value_In_First_Register&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::AE6D2F6A-C97C-4A50-A192-05DED2E17523::net8.0::Tests.TextInterpreterTests&lt;/TestId&gt;&#xD;
     &lt;/TestAncestor&gt;&#xD;
   &lt;/Or&gt;&#xD;
 &lt;/SessionState&gt;</s:String>

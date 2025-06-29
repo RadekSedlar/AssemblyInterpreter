@@ -15,5 +15,6 @@ public enum TextSectionTokenType
     Times,
     Register,
     Eof,
-    NewLine
+    NewLine,
+    Label
 }
