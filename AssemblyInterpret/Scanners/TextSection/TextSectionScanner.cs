@@ -11,6 +11,7 @@ public class TextSectionScanner
     private int _currentColumn;
     private List<TextSectionToken> _tokens = [];
     
+    public int CurrentTokenIndex { get; set; }
     
     public TextSectionScanner(string originalText)
     {
@@ -19,20 +20,16 @@ public class TextSectionScanner
 
     public TextSectionToken GetToken()
     {
-        if (_tokens.Count == 0)
+        if (CurrentTokenIndex >= _tokens.Count - 1)
         {
             return new TextSectionToken(TextSectionTokenType.Eof, "", _currentLine, _currentColumn);
         }
-
-        var first = _tokens.First();
-
-        _tokens.Remove(first);
-        return first;
+        return _tokens[CurrentTokenIndex++];
     }
 
-    public void ReturnToken(TextSectionToken token)
+    public void ReturnToken()
     {
-        _tokens = [token, .._tokens];
+        CurrentTokenIndex--;
     }
 
     private char? GetCharacter()
@@ -67,10 +64,10 @@ public class TextSectionScanner
                     _tokens.Add(new TextSectionToken(TextSectionTokenType.Eof, "", _currentLine, _currentColumn));
                     return;
                 case '\r': // TODO \r\n
-                    var newLine = GetCharacter();
+                    var newLine = GetCharacter() ?? throw new Exception("Unexpected \\r character");
                     if (newLine != '\n')
                     {
-                        return;
+                        throw new Exception("Unexpected \\r character");
                     }
                     _tokens.Add(new TextSectionToken(TextSectionTokenType.NewLine, "\r\n", _currentLine, _currentColumn));
                     _currentLine++;
@@ -95,10 +92,13 @@ public class TextSectionScanner
                     _tokens.Add(new TextSectionToken(TextSectionTokenType.SqBracketClose, "]", _currentLine, _currentColumn));
                     break;
                 case (>= 'a' and <= 'z') or (>= 'A' and <= 'Z'): 
-                    _tokens.Add(GenerateWordOfLabel(currentCharacter.Value));
+                    _tokens.Add(GenerateWord(currentCharacter.Value));
                     break;
                 case (>= '0' and <= '9'): 
                     _tokens.Add(GenerateNumber(currentCharacter.Value));
+                    break;
+                case '.': 
+                    _tokens.Add(GenerateLabel());
                     break;
                 default:
                     return;
@@ -106,9 +106,33 @@ public class TextSectionScanner
         }
     }
 
-    
+    private TextSectionToken GenerateLabel()
+    {
+        var sb = new StringBuilder(".");
 
-    private TextSectionToken GenerateWordOfLabel(char startingChar)
+        int literalStartingPosition = _currentColumn;
+
+        while (true)
+        {
+            var nextChar = GetCharacter();
+            
+            if (nextChar is not ((>= 'a' and <= 'z') or (>= 'A' and <= 'Z') or (>= '0' and <= '9') or '_'))
+            {
+                if (nextChar is not null) ReturnCharacter();
+
+                string labelName = sb.ToString();
+
+
+                return new TextSectionToken(TextSectionTokenType.Label, labelName, _currentLine, literalStartingPosition);
+
+            }
+            
+            sb.Append(nextChar);
+        }
+    }
+
+
+    private TextSectionToken GenerateWord(char startingChar)
     {
         var sb = new StringBuilder($"{startingChar}");
 

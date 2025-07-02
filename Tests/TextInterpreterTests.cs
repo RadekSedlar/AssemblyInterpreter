@@ -109,4 +109,42 @@ public class TextInterpreterTests
         
         Assert.Equal((uint)10, _globalMemory.ReadDoubleWord(18));
     }
+    
+    [Fact]
+    public void Interpret_Label_Should_Contain_Label()
+    {
+        string textSection = ".label_name";
+        TextInterpreter textInterpreter = new TextInterpreter(_globalMemory, textSection,
+            _registers);
+        
+        textInterpreter.InterpretSection();
+        
+        Assert.True(textInterpreter.Labels.ContainsKey(".label_name"));
+    }
+    
+    [Fact]
+    public void Interpret_Jmp_Without_Defining_Label_First_Should_Throw_Exception()
+    {
+        string textSection = "jmp .label_name";
+        TextInterpreter textInterpreter = new TextInterpreter(_globalMemory, textSection,
+            _registers);
+        
+        
+        Assert.Throws<Exception>(() => textInterpreter.InterpretSection());
+    }
+    
+    /*[Fact]
+    public void DOOM_OF_CPUS()
+    {
+        string textSection = """
+                             .label_name
+                             jmp .label_name
+                             """;
+        TextInterpreter textInterpreter = new TextInterpreter(_globalMemory, textSection,
+            _registers);
+        
+        
+        Assert.Throws<Exception>(() => textInterpreter.InterpretSection());
+    }*/
+    
 }

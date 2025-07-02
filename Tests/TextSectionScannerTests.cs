@@ -137,7 +137,7 @@ public class TextSectionScannerTests
     }
     
     [Fact]
-    public void Plus_Sing_Should_Return_Plus_Token()
+    public void Plus_Sign_Should_Return_Plus_Token()
     {
         var sut = new TextSectionScanner(" + ");
         sut.Scan();
@@ -148,7 +148,7 @@ public class TextSectionScannerTests
     }
     
     [Fact]
-    public void Minus_Sing_Should_Return_Minus_Token()
+    public void Minus_Sign_Should_Return_Minus_Token()
     {
         var sut = new TextSectionScanner(" -");
         sut.Scan();
@@ -159,7 +159,7 @@ public class TextSectionScannerTests
     }
     
     [Fact]
-    public void Times_Sing_Should_Return_Times_Token()
+    public void Times_Sign_Should_Return_Times_Token()
     {
         var sut = new TextSectionScanner("*");
         sut.Scan();
@@ -167,6 +167,17 @@ public class TextSectionScannerTests
         var token = sut.GetToken();
         
         Assert.True(token is {Type: TextSectionTokenType.Times});
+    }
+    
+    [Fact]
+    public void Label_Should_Return_Label_Token()
+    {
+        var sut = new TextSectionScanner(".labelName");
+        sut.Scan();
+
+        var token = sut.GetToken();
+        
+        Assert.True(token is {Type: TextSectionTokenType.Label, Lexeme: ".labelName"});
     }
     
     [Fact]

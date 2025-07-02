@@ -6,17 +6,20 @@ namespace AssemblyInterpret.Interpreters;
 
 
 /// <summary>
-/// Need to iplement
+/// Need to implement
 /// 1. explicit instruction size, for memory to memory operations.
-/// 2. labels
-/// 3. jmp
+/// 2. labels - DONE
+/// 3. jmp - DONE
 /// 4. cmp
+/// 5. conditional jumps
 /// </summary>
 public class TextInterpreter
 {
     public GlobalMemory Memory { get; init; }
     public TextSectionScanner SectionScanner { get; init; }
     public Registers Registers { get; init; }
+    
+    public Dictionary<string, int> Labels { get; init; } = new();
     public TextInterpreter(GlobalMemory memory, string textSectionText,Registers registers)
     {
         Memory = memory;
@@ -48,12 +51,28 @@ public class TextInterpreter
                 case TextSectionTokenType.Word:
                     InterpretInstruction(token.Lexeme);
                     break;
+                case TextSectionTokenType.Label:
+                    RegisterLabel(token.Lexeme, SectionScanner.CurrentTokenIndex);
+                    break;
                 case TextSectionTokenType.Eof:
                     return;
                 default:
                     throw new UnexpectedTokenTypeException($"Instruction is expected. '{token.Type} was given.'");
             }
         }
+    }
+
+    private void RegisterLabel(string tokenLexeme, int sectionScannerCurrentTokenIndex)
+    {
+        if (Labels.TryGetValue(tokenLexeme, out int alreadyDefinedLabelTokenIndex))
+        {
+            if (alreadyDefinedLabelTokenIndex != sectionScannerCurrentTokenIndex)
+            {
+                throw new Exception("Label already defined with different index.");
+            }
+        }
+        
+        Labels[tokenLexeme] = sectionScannerCurrentTokenIndex;
     }
 
 
@@ -64,11 +83,39 @@ public class TextInterpreter
             case "add":
                 InterpretInstructionAdd();
                 break;
+            case "jmp":
+                InterpretInstructionJmp();
+                break;
             default:
                 throw new UnexpectedTokenTypeException($"Instruction is expected. '{instruction}'.");
         }
     }
 
+    private void InterpretInstructionJmp()
+    {
+        var arguments = GetArguments();
+        
+        if (arguments.Count != 1)
+        {
+            throw new Exception($"Unexpected number of arguments. Expected 1, got {arguments.Count}.");
+        }
+        
+        var firstArgument = arguments[0];
+
+        if (firstArgument.Type is ArgumentType.Label)
+        {
+            if (!Labels.TryGetValue(firstArgument.Lexeme, out int indexOfLabel))
+            {
+                throw new Exception("Label must be first defined before jumping to it.");
+            }
+
+            SectionScanner.CurrentTokenIndex = indexOfLabel;
+            return;
+        }
+        
+        throw new NotImplementedException();
+    }
+    
     private void InterpretInstructionAdd()
     {
         var arguments = GetArguments();
@@ -324,8 +371,8 @@ public class TextInterpreter
                 return (true, false, true, valueFromRegister, CheckIfAddressEnded());
             }
             
-            SectionScanner.ReturnToken(registerCheckToken);
-            SectionScanner.ReturnToken(timesCheckToken);
+            SectionScanner.ReturnToken();
+            SectionScanner.ReturnToken();
             
             return (false, true, false, uint.Parse(token.Lexeme), CheckIfAddressEnded());
         }
@@ -341,7 +388,7 @@ public class TextInterpreter
             return true;
         }
         
-        SectionScanner.ReturnToken(token);
+        SectionScanner.ReturnToken();
         return false;
     }
 
@@ -397,6 +444,9 @@ public class TextInterpreter
                 case TextSectionTokenType.SqBracketOpen:
                     arguments.Add(new Argument(InterpretValueOfAddress(2, true, true, false, 0), ArgumentType.Address, token.Lexeme, ByteCount.DB));
                     break;
+                case TextSectionTokenType.Label:
+                    arguments.Add(new Argument(0, ArgumentType.Label, token.Lexeme, ByteCount.DB));
+                    break;
                 case TextSectionTokenType.NewLine:
                     return arguments;
                 default:
@@ -424,7 +474,7 @@ public class Argument
 
 public enum ArgumentType
 {
-    Address, Value, Register
+    Address, Value, Register, Label
 }
 
 
