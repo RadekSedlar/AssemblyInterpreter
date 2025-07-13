@@ -147,4 +147,19 @@ public class TextInterpreterTests
         Assert.Throws<Exception>(() => textInterpreter.InterpretSection());
     }*/
     
+    /*[Fact]
+    public void DOOM_OF_CPUS()
+    {
+        string textSection = """
+                             .loop
+                             e .label_name
+                             """;
+        
+        TextInterpreter textInterpreter = new TextInterpreter(_globalMemory, textSection,
+            _registers);
+
+
+        Assert.Throws<Exception>(() => textInterpreter.InterpretSection());
+    }*/
+    
 }

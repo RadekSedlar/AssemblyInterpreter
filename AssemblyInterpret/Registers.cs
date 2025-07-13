@@ -2,6 +2,8 @@
 {
     public class Registers
     {
+        public bool CarryFlag { get; set; }
+        public bool ZeroFlag { get; set; }
         public UInt32 Esp
         {
             get => GPRegisters["esp"].Register;

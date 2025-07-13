@@ -10,7 +10,7 @@ namespace AssemblyInterpret.Interpreters;
 /// 1. explicit instruction size, for memory to memory operations.
 /// 2. labels - DONE
 /// 3. jmp - DONE
-/// 4. cmp
+/// 4. cmp and zero flags
 /// 5. conditional jumps
 /// </summary>
 public class TextInterpreter
@@ -86,9 +86,167 @@ public class TextInterpreter
             case "jmp":
                 InterpretInstructionJmp();
                 break;
+            case "cmp":
+                InterpretInstructionCmp();
+                break;
+            case "je":
+                InterpretInstructionJe();
+                break;
             default:
                 throw new UnexpectedTokenTypeException($"Instruction is expected. '{instruction}'.");
         }
+    }
+
+    private void InterpretInstructionJe()
+    {
+        var arguments = GetArguments();
+
+        if (GetArguments().Count != 0)
+        {
+            throw new Exception($"Unexpected number of arguments. Expected 0, got {arguments.Count}.");
+        }
+        
+        
+    }
+
+    private void InterpretInstructionCmp()
+    {
+        var arguments = GetArguments();
+
+        if (arguments.Count != 2)
+        {
+            throw new Exception($"Unexpected number of arguments. Expected 2, got {arguments.Count}.");
+        }
+        
+        var firstArgument = arguments[0];
+        var secondArgument = arguments[1];
+
+        if (firstArgument.Type is ArgumentType.Register && secondArgument.Type is ArgumentType.Register)
+        {
+            if (firstArgument.Bytes != secondArgument.Bytes)
+            {
+                throw new Exception("Registers of different sizes were used");
+            }
+
+            if (firstArgument.Bytes is ByteCount.DB)
+            {
+                byte firstRegisterValue = Registers.GetByteRegister(firstArgument.Lexeme);
+                byte secondRegisterValue = Registers.GetByteRegister(secondArgument.Lexeme);
+                
+                Registers.ZeroFlag = firstRegisterValue == secondRegisterValue;
+                return;
+            }
+            
+            if (firstArgument.Bytes is ByteCount.DW)
+            {
+                ushort firstRegisterValue = Registers.GetWordRegister(firstArgument.Lexeme);
+                ushort secondRegisterValue = Registers.GetWordRegister(secondArgument.Lexeme);
+                
+                Registers.ZeroFlag = firstRegisterValue == secondRegisterValue;
+                return;
+            }
+            
+            if (firstArgument.Bytes is ByteCount.DD)
+            {
+                uint firstRegisterValue = Registers.GetDoubleWordRegister(firstArgument.Lexeme);
+                uint secondRegisterValue = Registers.GetDoubleWordRegister(secondArgument.Lexeme);
+                
+                Registers.ZeroFlag = firstRegisterValue == secondRegisterValue;
+                return;
+            }
+        }
+        
+        if (firstArgument.Type is ArgumentType.Register && secondArgument.Type is ArgumentType.Address)
+        {
+            if (firstArgument.Bytes is ByteCount.DB)
+            {
+                byte firstRegisterValue = Registers.GetByteRegister(firstArgument.Lexeme);
+                byte secondMemoryValue = Memory.ReadByte(secondArgument.Value);
+                
+                Registers.ZeroFlag = firstRegisterValue == secondMemoryValue;
+                return;
+            }
+            
+            if (firstArgument.Bytes is ByteCount.DW)
+            {
+                ushort firstRegisterValue = Registers.GetWordRegister(firstArgument.Lexeme);
+                ushort secondMemoryValue = Memory.ReadWord(secondArgument.Value);
+                
+                Registers.ZeroFlag = firstRegisterValue == secondMemoryValue;
+                return;
+            }
+            
+            if (firstArgument.Bytes is ByteCount.DD)
+            {
+                uint firstRegisterValue = Registers.GetDoubleWordRegister(firstArgument.Lexeme);
+                uint secondMemoryValue = Memory.ReadDoubleWord(secondArgument.Value);
+                
+                Registers.ZeroFlag = firstRegisterValue == secondMemoryValue;
+                return;
+            }
+        }
+        
+        if (firstArgument.Type is ArgumentType.Address && secondArgument.Type is ArgumentType.Register)
+        {
+            if (secondArgument.Bytes is ByteCount.DB)
+            {
+                byte firstMemoryValue = Memory.ReadByte(firstArgument.Value);
+                byte secondRegisterValue = Registers.GetByteRegister(secondArgument.Lexeme);
+                
+                Registers.ZeroFlag = firstMemoryValue == secondRegisterValue;
+                return;
+            }
+            
+            if (secondArgument.Bytes is ByteCount.DW)
+            {
+                ushort firstMemoryValue = Memory.ReadWord(firstArgument.Value);
+                ushort secondRegisterValue = Registers.GetWordRegister(secondArgument.Lexeme);
+                
+                Registers.ZeroFlag = firstMemoryValue == secondRegisterValue;
+                return;
+            }
+            
+            if (secondArgument.Bytes is ByteCount.DD)
+            {
+                uint firstMemoryValue = Memory.ReadDoubleWord(firstArgument.Value);
+                uint secondRegisterValue = Registers.GetDoubleWordRegister(secondArgument.Lexeme);
+                
+                Registers.ZeroFlag = firstMemoryValue == secondRegisterValue;
+                return;
+            }
+        }
+        
+        if (firstArgument.Type is ArgumentType.Address && secondArgument.Type is ArgumentType.Address)
+        {
+            if (firstArgument.Bytes is ByteCount.DB)
+            {
+                byte firstMemoryValue = Memory.ReadByte(firstArgument.Value);
+                byte secondMemoryValue = Memory.ReadByte(secondArgument.Value);
+                
+                Registers.ZeroFlag = firstMemoryValue == secondMemoryValue;
+                return;
+            }
+            
+            if (firstArgument.Bytes is ByteCount.DW)
+            {
+                ushort firstMemoryValue = Memory.ReadWord(firstArgument.Value);
+                ushort secondMemoryValue = Memory.ReadWord(secondArgument.Value);
+                
+                Registers.ZeroFlag = firstMemoryValue == secondMemoryValue;
+                return;
+            }
+            
+            if (firstArgument.Bytes is ByteCount.DD)
+            {
+                uint firstMemoryValue = Memory.ReadDoubleWord(firstArgument.Value);
+                uint secondMemoryValue = Memory.ReadDoubleWord(secondArgument.Value);
+                
+                Registers.ZeroFlag = firstMemoryValue == secondMemoryValue;
+                return;
+            }
+        }
+        
+        throw new NotImplementedException();
     }
 
     private void InterpretInstructionJmp()
@@ -141,6 +299,7 @@ public class TextInterpreter
                 byte secondRegisterValue = Registers.GetByteRegister(secondArgument.Lexeme);
                 
                 Registers.SetByteRegister(firstArgument.Lexeme, (byte)(firstRegisterValue + secondRegisterValue));
+                return;
             }
             
             if (firstArgument.Bytes is ByteCount.DW)
@@ -149,6 +308,7 @@ public class TextInterpreter
                 ushort secondRegisterValue = Registers.GetWordRegister(secondArgument.Lexeme);
                 
                 Registers.SetWordRegister(firstArgument.Lexeme, (ushort)(firstRegisterValue + secondRegisterValue));
+                return;
             }
             
             if (firstArgument.Bytes is ByteCount.DD)
@@ -157,9 +317,8 @@ public class TextInterpreter
                 uint secondRegisterValue = Registers.GetDoubleWordRegister(secondArgument.Lexeme);
                 
                 Registers.SetDoubleWordRegister(firstArgument.Lexeme, firstRegisterValue + secondRegisterValue);
+                return;
             }
-            
-            return;
         }
         
         if (firstArgument.Type is ArgumentType.Register && secondArgument.Type is ArgumentType.Address)
