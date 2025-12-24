@@ -95,6 +95,12 @@ public class TextInterpreter
             case "je":
                 InterpretInstructionJe();
                 break;
+            case "ja":
+                InterpretInstructionJa();
+                break;
+            case "jl":
+                InterpretInstructionJl();
+                break;
             default:
                 throw new UnexpectedTokenTypeException($"Instruction is expected. '{instruction}'.");
         }
@@ -103,13 +109,106 @@ public class TextInterpreter
     private void InterpretInstructionJe()
     {
         var arguments = GetArguments();
-
-        if (GetArguments().Count != 0)
+        
+        if (arguments.Count != 1)
         {
-            throw new Exception($"Unexpected number of arguments. Expected 0, got {arguments.Count}.");
+            throw new Exception($"Unexpected number of arguments. Expected 1, got {arguments.Count}.");
+        }
+
+        if (!Registers.ZeroFlag)
+        {
+            return;
         }
         
+        var firstArgument = arguments[0];
+
+        if (firstArgument.Type is ArgumentType.Label)
+        {
+            if (!LocalLabels.TryGetValue(firstArgument.Lexeme, out int indexOfLabel))
+            {
+                if (!GlobalLabels.TryGetValue(firstArgument.Lexeme, out int globalLineIndex))
+                {
+                    throw new Exception("Label must be first defined before jumping to it.");    
+                }
+
+                throw new GlobalJumpException(globalLineIndex);
+            }
+
+            SectionScanner.CurrentTokenIndex = indexOfLabel;
+            return;
+        }
         
+        throw new NotImplementedException();
+    }
+    
+    private void InterpretInstructionJa()
+    {
+        var arguments = GetArguments();
+        
+        if (arguments.Count != 1)
+        {
+            throw new Exception($"Unexpected number of arguments. Expected 1, got {arguments.Count}.");
+        }
+
+        if (!Registers.ZeroFlag || !Registers.CarryFlag)
+        {
+            return;
+        }
+        
+        var firstArgument = arguments[0];
+
+        if (firstArgument.Type is ArgumentType.Label)
+        {
+            if (!LocalLabels.TryGetValue(firstArgument.Lexeme, out int indexOfLabel))
+            {
+                if (!GlobalLabels.TryGetValue(firstArgument.Lexeme, out int globalLineIndex))
+                {
+                    throw new Exception("Label must be first defined before jumping to it.");    
+                }
+
+                throw new GlobalJumpException(globalLineIndex);
+            }
+
+            SectionScanner.CurrentTokenIndex = indexOfLabel;
+            return;
+        }
+        
+        throw new NotImplementedException();
+    }
+    
+    private void InterpretInstructionJl()
+    {
+        var arguments = GetArguments();
+        
+        if (arguments.Count != 1)
+        {
+            throw new Exception($"Unexpected number of arguments. Expected 1, got {arguments.Count}.");
+        }
+
+        if (!Registers.Lower)
+        {
+            return;
+        }
+        
+        var firstArgument = arguments[0];
+
+        if (firstArgument.Type is ArgumentType.Label)
+        {
+            if (!LocalLabels.TryGetValue(firstArgument.Lexeme, out int indexOfLabel))
+            {
+                if (!GlobalLabels.TryGetValue(firstArgument.Lexeme, out int globalLineIndex))
+                {
+                    throw new Exception("Label must be first defined before jumping to it.");    
+                }
+
+                throw new GlobalJumpException(globalLineIndex);
+            }
+
+            SectionScanner.CurrentTokenIndex = indexOfLabel;
+            return;
+        }
+        
+        throw new NotImplementedException();
     }
 
     private void InterpretInstructionCmp()
@@ -137,6 +236,8 @@ public class TextInterpreter
                 byte secondRegisterValue = Registers.GetByteRegister(secondArgument.Lexeme);
                 
                 Registers.ZeroFlag = firstRegisterValue == secondRegisterValue;
+                Registers.CarryFlag = secondRegisterValue > firstRegisterValue;
+                Registers.Lower = secondRegisterValue > firstRegisterValue;
                 return;
             }
             
@@ -146,6 +247,8 @@ public class TextInterpreter
                 ushort secondRegisterValue = Registers.GetWordRegister(secondArgument.Lexeme);
                 
                 Registers.ZeroFlag = firstRegisterValue == secondRegisterValue;
+                Registers.CarryFlag = secondRegisterValue > firstRegisterValue;
+                Registers.Lower = secondRegisterValue > firstRegisterValue;
                 return;
             }
             
@@ -155,6 +258,8 @@ public class TextInterpreter
                 uint secondRegisterValue = Registers.GetDoubleWordRegister(secondArgument.Lexeme);
                 
                 Registers.ZeroFlag = firstRegisterValue == secondRegisterValue;
+                Registers.CarryFlag = secondRegisterValue > firstRegisterValue;
+                Registers.Lower = secondRegisterValue > firstRegisterValue;
                 return;
             }
         }
@@ -167,6 +272,8 @@ public class TextInterpreter
                 byte secondMemoryValue = Memory.ReadByte(secondArgument.Value);
                 
                 Registers.ZeroFlag = firstRegisterValue == secondMemoryValue;
+                Registers.CarryFlag = secondMemoryValue > firstRegisterValue;
+                Registers.Lower = secondMemoryValue > firstRegisterValue;
                 return;
             }
             
@@ -176,6 +283,8 @@ public class TextInterpreter
                 ushort secondMemoryValue = Memory.ReadWord(secondArgument.Value);
                 
                 Registers.ZeroFlag = firstRegisterValue == secondMemoryValue;
+                Registers.CarryFlag = secondMemoryValue > firstRegisterValue;
+                Registers.Lower = secondMemoryValue > firstRegisterValue;
                 return;
             }
             
@@ -185,6 +294,8 @@ public class TextInterpreter
                 uint secondMemoryValue = Memory.ReadDoubleWord(secondArgument.Value);
                 
                 Registers.ZeroFlag = firstRegisterValue == secondMemoryValue;
+                Registers.CarryFlag = secondMemoryValue > firstRegisterValue;
+                Registers.Lower = secondMemoryValue > firstRegisterValue;
                 return;
             }
         }
@@ -197,6 +308,8 @@ public class TextInterpreter
                 byte secondRegisterValue = Registers.GetByteRegister(secondArgument.Lexeme);
                 
                 Registers.ZeroFlag = firstMemoryValue == secondRegisterValue;
+                Registers.CarryFlag = secondRegisterValue > firstMemoryValue;
+                Registers.Lower = secondRegisterValue > firstMemoryValue;
                 return;
             }
             
@@ -206,6 +319,8 @@ public class TextInterpreter
                 ushort secondRegisterValue = Registers.GetWordRegister(secondArgument.Lexeme);
                 
                 Registers.ZeroFlag = firstMemoryValue == secondRegisterValue;
+                Registers.CarryFlag = secondRegisterValue > firstMemoryValue;
+                Registers.Lower = secondRegisterValue > firstMemoryValue;
                 return;
             }
             
@@ -215,6 +330,8 @@ public class TextInterpreter
                 uint secondRegisterValue = Registers.GetDoubleWordRegister(secondArgument.Lexeme);
                 
                 Registers.ZeroFlag = firstMemoryValue == secondRegisterValue;
+                Registers.CarryFlag = secondRegisterValue > firstMemoryValue;
+                Registers.Lower = secondRegisterValue > firstMemoryValue;
                 return;
             }
         }
@@ -227,6 +344,8 @@ public class TextInterpreter
                 byte secondMemoryValue = Memory.ReadByte(secondArgument.Value);
                 
                 Registers.ZeroFlag = firstMemoryValue == secondMemoryValue;
+                Registers.CarryFlag = secondMemoryValue > firstMemoryValue;
+                Registers.Lower = secondMemoryValue > firstMemoryValue;
                 return;
             }
             
@@ -236,6 +355,8 @@ public class TextInterpreter
                 ushort secondMemoryValue = Memory.ReadWord(secondArgument.Value);
                 
                 Registers.ZeroFlag = firstMemoryValue == secondMemoryValue;
+                Registers.CarryFlag = secondMemoryValue > firstMemoryValue;
+                Registers.Lower = secondMemoryValue > firstMemoryValue;
                 return;
             }
             
@@ -245,6 +366,80 @@ public class TextInterpreter
                 uint secondMemoryValue = Memory.ReadDoubleWord(secondArgument.Value);
                 
                 Registers.ZeroFlag = firstMemoryValue == secondMemoryValue;
+                Registers.CarryFlag = secondMemoryValue > firstMemoryValue;
+                Registers.Lower = secondMemoryValue > firstMemoryValue;
+                return;
+            }
+        }
+        
+        if (firstArgument.Type is ArgumentType.Address && secondArgument.Type is ArgumentType.Address)
+        {
+            if (firstArgument.Bytes is ByteCount.DB)
+            {
+                byte firstMemoryValue = Memory.ReadByte(firstArgument.Value);
+                byte secondMemoryValue = Memory.ReadByte(secondArgument.Value);
+                
+                Registers.ZeroFlag = firstMemoryValue == secondMemoryValue;
+                Registers.CarryFlag = secondMemoryValue > firstMemoryValue;
+                Registers.Lower = secondMemoryValue > firstMemoryValue;
+                return;
+            }
+            
+            if (firstArgument.Bytes is ByteCount.DW)
+            {
+                ushort firstMemoryValue = Memory.ReadWord(firstArgument.Value);
+                ushort secondMemoryValue = Memory.ReadWord(secondArgument.Value);
+                
+                Registers.ZeroFlag = firstMemoryValue == secondMemoryValue;
+                Registers.CarryFlag = secondMemoryValue > firstMemoryValue;
+                Registers.Lower = secondMemoryValue > firstMemoryValue;
+                return;
+            }
+            
+            if (firstArgument.Bytes is ByteCount.DD)
+            {
+                uint firstMemoryValue = Memory.ReadDoubleWord(firstArgument.Value);
+                uint secondMemoryValue = Memory.ReadDoubleWord(secondArgument.Value);
+                
+                Registers.ZeroFlag = firstMemoryValue == secondMemoryValue;
+                Registers.CarryFlag = secondMemoryValue > firstMemoryValue;
+                Registers.Lower = secondMemoryValue > firstMemoryValue;
+                return;
+            }
+        }
+        
+        if (firstArgument.Type is ArgumentType.Register && secondArgument.Type is ArgumentType.Value)
+        {
+            if (firstArgument.Bytes is ByteCount.DB)
+            {
+                byte firstRegisterValue = Registers.GetByteRegister(firstArgument.Lexeme);
+                byte secondValue = (byte) secondArgument.Value;
+                
+                Registers.ZeroFlag = firstRegisterValue == secondValue;
+                Registers.CarryFlag = secondValue > firstRegisterValue;
+                Registers.Lower = secondValue > firstRegisterValue;
+                return;
+            }
+            
+            if (firstArgument.Bytes is ByteCount.DW)
+            {
+                ushort firstRegisterValue = Registers.GetWordRegister(firstArgument.Lexeme);
+                ushort secondValue = (ushort) secondArgument.Value;;
+                
+                Registers.ZeroFlag = firstRegisterValue == secondValue;
+                Registers.CarryFlag = secondValue > firstRegisterValue;
+                Registers.Lower = secondValue > firstRegisterValue;
+                return;
+            }
+            
+            if (firstArgument.Bytes is ByteCount.DD)
+            {
+                uint firstRegisterValue = Registers.GetDoubleWordRegister(firstArgument.Lexeme);
+                uint secondValue = (uint) secondArgument.Value;;
+                
+                Registers.ZeroFlag = firstRegisterValue == secondValue;
+                Registers.CarryFlag = secondValue > firstRegisterValue;
+                Registers.Lower = secondValue > firstRegisterValue;
                 return;
             }
         }

@@ -4,6 +4,8 @@
     {
         public bool CarryFlag { get; set; }
         public bool ZeroFlag { get; set; }
+        // TODO: this is temp flag. This needs to be removed and OF, SF flags need to be implemented. CMP instruction must have functions that set all FLAGS
+        public bool Lower { get; set; }
         public UInt32 Esp
         {
             get => GPRegisters["esp"].Register;

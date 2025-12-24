@@ -81,7 +81,7 @@
                              var DB 64 ;Declare a byte containing the value 64. Label the
                              ; memory location “var”.
                              str DB 'hello',0 ; Declare 5 bytes starting at the address “str”
-                             neco DB 9 
+                             neco DB 10 
                              DB 1 
                              DB 9 
                              DW 9 
@@ -93,7 +93,8 @@
                              add ebx [14]
                              .section1
                              add al [8]
-                             jmp .section1
+                             cmp al 10
+                             jl .section1
                              ";
 
         public Registers Registers { get; set; } = new Registers()
