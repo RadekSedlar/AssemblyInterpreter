@@ -20,8 +20,9 @@ public class TextSectionScanner
 
     public TextSectionToken GetToken()
     {
-        if (CurrentTokenIndex >= _tokens.Count - 1)
+        if (CurrentTokenIndex >= _tokens.Count)
         {
+            CurrentTokenIndex++;
             return new TextSectionToken(TextSectionTokenType.Eof, "", _currentLine, _currentColumn);
         }
         return _tokens[CurrentTokenIndex++];

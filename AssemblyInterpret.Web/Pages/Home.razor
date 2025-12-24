@@ -1,0 +1,118 @@
+﻿@page "/"
+@using AssemblyInterpret.Interpreters
+
+<PageTitle>Debugger FE</PageTitle>
+<div class="container">
+    <div class="row">
+        <div class="col-md">
+            <div>Current line: @_pageInsides.AssemblyInterpreter.CurrentLineIndex</div>
+            <div>Mode: @_pageInsides.AssemblyInterpreter.Mode</div>
+            <div class="d-flex gap-2 flex-column w-100">
+
+                @for (int i = 0; i < _pageInsides.AssemblyInterpreter.Lines.Count; i++)
+                {
+                    string line = @_pageInsides.AssemblyInterpreter.Lines[i];
+                    if (i == _pageInsides.AssemblyInterpreter.CurrentLineIndex)
+                    {
+                        <span>@line <b>&Leftarrow;</b></span>
+                    }
+                    else
+                    {
+                        if (string.IsNullOrWhiteSpace(line))
+                        {
+                            <br/>
+                        }
+                        else
+                        {
+                            <span>@line</span>
+                        }
+                    }
+                }
+                <button @onclick="InterpretNextLine">Interpret next line</button>
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="d-flex gap-2 flex-column">
+                @for (uint i = 0; i < _pageInsides.Memory.MemorySize;)
+                {
+                    var lineDescriptor = string.Format("0_x{0:X4}", i);
+                    <div class="d-flex flex-row">
+                        <div class="text-danger mx-3">@lineDescriptor</div>
+                        @for (int j = 0; j < 16 && i < _pageInsides.Memory.MemorySize; j++)
+                        {
+                            var memoryCellText = string.Format(" {0:X2}", _pageInsides.Memory.ReadByte(i));
+                            <div class="mx-1">@memoryCellText</div>
+                            i++;
+                        }
+                    </div>
+                }
+            </div>
+            <div class="d-flex gap-2 flex-column">
+                <div class="d-flex flex-row justify-content-between">
+                    <span></span>
+                </div>
+                <div class="d-flex flex-row justify-content-between">
+                    @{
+                        var registerEaxText = $"0_b{_pageInsides.Registers.Eax:b32}";
+                        <span>EAX</span>
+                        <span>@registerEaxText</span>
+                    }
+                </div>
+                <div class="d-flex flex-row justify-content-between">
+                    @{
+                        var registerEbxText = $"0_b{_pageInsides.Registers.Ebx:b32}";
+                        <span>EBX</span>
+                        <span>@registerEbxText</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+    class PageInsides
+    {
+
+        public string ProgramText { get; set; } = @"
+                             data:
+                             var DB 64 ;Declare a byte containing the value 64. Label the
+                             ; memory location “var”.
+                             str DB 'hello',0 ; Declare 5 bytes starting at the address “str”
+                             neco DB 9 
+                             DB 9 
+                             DB 9 
+                             DW 9 
+                             DW 9
+                             DD 9
+                             DD 9 
+                             text:
+                             add eax ebx
+                             add ebx [14]
+                             ";
+
+        public Registers Registers { get; set; } = new Registers()
+        {
+            Eax = 1,
+            Ebx = 2
+        };
+
+        public GlobalMemory Memory { get; set; } = new GlobalMemory(40);
+        public AssemblyInterpreter AssemblyInterpreter { get; set; }
+
+        public PageInsides()
+        {
+            AssemblyInterpreter = new AssemblyInterpreter(Memory, Registers, ProgramText);
+        }
+    }
+
+    private PageInsides _pageInsides = new PageInsides();
+
+    public void InterpretNextLine()
+    {
+        _pageInsides.AssemblyInterpreter.InterpretNextLine();
+    }
+
+}

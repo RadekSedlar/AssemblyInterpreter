@@ -76,6 +76,11 @@ public class DataSectionScanner
                     _currentLine++;
                     _currentColumn = 0;
                     break;
+                case '\n': // TODO \r\n
+                    _tokens.Add(new DataSectionToken(DataSectionTokenType.Newline, "\r\n", _currentLine, _currentColumn));
+                    _currentLine++;
+                    _currentColumn = 0;
+                    break;
                 case '?': 
                     _tokens.Add(new DataSectionToken(DataSectionTokenType.EmptyValue, "?", _currentLine, _currentColumn));
                     break;

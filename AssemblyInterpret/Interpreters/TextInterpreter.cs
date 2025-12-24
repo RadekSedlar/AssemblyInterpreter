@@ -606,7 +606,7 @@ public class TextInterpreter
                 case TextSectionTokenType.Label:
                     arguments.Add(new Argument(0, ArgumentType.Label, token.Lexeme, ByteCount.DB));
                     break;
-                case TextSectionTokenType.NewLine:
+                case TextSectionTokenType.NewLine or TextSectionTokenType.Eof:
                     return arguments;
                 default:
                     throw new UnexpectedTokenTypeException($"Instruction is expected. '{token.Type}' was given.");

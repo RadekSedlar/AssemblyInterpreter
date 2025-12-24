@@ -1,0 +1,13 @@
+﻿@inherits LayoutComponentBase
+<div class="page">
+    <ErrorBoundary>
+        <ChildContent>
+            @Body
+        </ChildContent>
+        <ErrorContent>
+            <p class="errorUI">😈 A rotten gremlin got us. Sorry!</p>
+            <br/>
+            <div>@context.StackTrace</div>
+        </ErrorContent>
+    </ErrorBoundary>
+</div>
