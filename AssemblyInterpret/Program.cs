@@ -64,7 +64,7 @@ class Program
         TextInterpreter textInterpreter = new TextInterpreter(memory, """
                                                                       add eax ebx
                                                                       add ebx [14]
-                                                                      """,registers);
+                                                                      """,registers, new (), 0);
         textInterpreter.InterpretSection();
         WriteRegisters(registers.GPRegisters["eax"]);
         Console.WriteLine("END");

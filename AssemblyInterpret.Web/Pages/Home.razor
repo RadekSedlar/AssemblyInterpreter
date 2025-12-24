@@ -41,7 +41,7 @@
                         @for (int j = 0; j < 16 && i < _pageInsides.Memory.MemorySize; j++)
                         {
                             var memoryCellText = string.Format(" {0:X2}", _pageInsides.Memory.ReadByte(i));
-                            <div class="mx-1">@memoryCellText</div>
+                            <span class="mx-1">@memoryCellText</span>
                             i++;
                         }
                     </div>
@@ -82,7 +82,7 @@
                              ; memory location “var”.
                              str DB 'hello',0 ; Declare 5 bytes starting at the address “str”
                              neco DB 9 
-                             DB 9 
+                             DB 1 
                              DB 9 
                              DW 9 
                              DW 9
@@ -91,6 +91,9 @@
                              text:
                              add eax ebx
                              add ebx [14]
+                             .section1
+                             add al [8]
+                             jmp .section1
                              ";
 
         public Registers Registers { get; set; } = new Registers()

@@ -19,11 +19,16 @@ public class TextInterpreter
     public TextSectionScanner SectionScanner { get; init; }
     public Registers Registers { get; init; }
     
-    public Dictionary<string, int> Labels { get; init; } = new();
-    public TextInterpreter(GlobalMemory memory, string textSectionText,Registers registers)
+    public Dictionary<string, int> LocalLabels { get; init; }
+    public Dictionary<string, int> GlobalLabels { get; init; }
+    public int CurrentSectionGlobalOffset { get; init; }
+    public TextInterpreter(GlobalMemory memory, string textSectionText, Registers registers, Dictionary<string, int> globalLabels, int lineOffset)
     {
         Memory = memory;
         Registers = registers;
+        GlobalLabels = globalLabels;
+        LocalLabels = new ();
+        CurrentSectionGlobalOffset = lineOffset;
         var sb = new StringBuilder();
         var lines = textSectionText.Split(Environment.NewLine);
 
@@ -52,7 +57,7 @@ public class TextInterpreter
                     InterpretInstruction(token.Lexeme);
                     break;
                 case TextSectionTokenType.Label:
-                    RegisterLabel(token.Lexeme, SectionScanner.CurrentTokenIndex);
+                    RegisterLabel(token.Lexeme, SectionScanner.CurrentTokenIndex, token.Line);
                     break;
                 case TextSectionTokenType.Eof:
                     return;
@@ -62,17 +67,15 @@ public class TextInterpreter
         }
     }
 
-    private void RegisterLabel(string tokenLexeme, int sectionScannerCurrentTokenIndex)
+    private void RegisterLabel(string tokenLexeme, int sectionScannerCurrentTokenIndex,  int line)
     {
-        if (Labels.TryGetValue(tokenLexeme, out int alreadyDefinedLabelTokenIndex))
+        if (GlobalLabels.TryGetValue(tokenLexeme, out int alreadyDefinedLabelTokenIndex))
         {
-            if (alreadyDefinedLabelTokenIndex != sectionScannerCurrentTokenIndex)
-            {
-                throw new Exception("Label already defined with different index.");
-            }
+            throw new Exception("Label already defined.");
         }
         
-        Labels[tokenLexeme] = sectionScannerCurrentTokenIndex;
+        GlobalLabels[tokenLexeme] = line + CurrentSectionGlobalOffset - 1; // -1 because global lines are indexed from 0
+        LocalLabels[tokenLexeme] = sectionScannerCurrentTokenIndex;
     }
 
 
@@ -262,9 +265,14 @@ public class TextInterpreter
 
         if (firstArgument.Type is ArgumentType.Label)
         {
-            if (!Labels.TryGetValue(firstArgument.Lexeme, out int indexOfLabel))
+            if (!LocalLabels.TryGetValue(firstArgument.Lexeme, out int indexOfLabel))
             {
-                throw new Exception("Label must be first defined before jumping to it.");
+                if (!GlobalLabels.TryGetValue(firstArgument.Lexeme, out int globalLineIndex))
+                {
+                    throw new Exception("Label must be first defined before jumping to it.");    
+                }
+
+                throw new GlobalJumpException(globalLineIndex);
             }
 
             SectionScanner.CurrentTokenIndex = indexOfLabel;
@@ -640,4 +648,14 @@ public enum ArgumentType
 public class UnexpectedTokenTypeException : Exception
 {
     public UnexpectedTokenTypeException(string message) : base(message) { }
+}
+
+public class GlobalJumpException : Exception
+{
+    public int GlobalLineJump { get; set; }
+
+    public GlobalJumpException(int lineToJump) : base("Expected jump")
+    {
+        GlobalLineJump = lineToJump;
+    }
 }

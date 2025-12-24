@@ -13,6 +13,7 @@ public class AssemblyInterpreter
     public GlobalMemory Memory { get; init; }
     public Registers Registers { get; init; }
     public string OriginalText { get; init; }
+    public Dictionary<string, int> Labels { get; init; }
     public List<string> Lines => _lines;
     public int CurrentLineIndex { get; set; }
     public InterpreterMode Mode { get; set; } =  InterpreterMode.NotSet;
@@ -24,6 +25,7 @@ public class AssemblyInterpreter
     {
         Registers = registers;
         Memory = memory;
+        Labels = new Dictionary<string, int>();
 
         OriginalText = originalText;
         _lines = originalText.Split(Environment.NewLine).ToList();
@@ -66,8 +68,15 @@ public class AssemblyInterpreter
         
         if (Mode == InterpreterMode.Text)
         {
-            TextInterpreter textInterpreter = new TextInterpreter(Memory, line, Registers);
-            textInterpreter.InterpretSection();
+            TextInterpreter textInterpreter = new TextInterpreter(Memory, line, Registers, Labels, CurrentLineIndex);
+            try
+            {
+                textInterpreter.InterpretSection();
+            }
+            catch (GlobalJumpException globalJumpException)
+            {
+                CurrentLineIndex = globalJumpException.GlobalLineJump;
+            }
         }
     }
 }

@@ -43,7 +43,7 @@ public class TextInterpreterTests
     {
         string textSection = "add eax ebx";
         TextInterpreter textInterpreter = new TextInterpreter(_globalMemory, textSection,
-            _registers);
+            _registers, new (), 0);
         
         textInterpreter.InterpretSection();
         
@@ -55,7 +55,7 @@ public class TextInterpreterTests
     {
         string textSection = "add ax bx";
         TextInterpreter textInterpreter = new TextInterpreter(_globalMemory, textSection,
-            _registers);
+            _registers, new (), 0);
         
         textInterpreter.InterpretSection();
         
@@ -67,7 +67,7 @@ public class TextInterpreterTests
     {
         string textSection = "add al bl";
         TextInterpreter textInterpreter = new TextInterpreter(_globalMemory, textSection,
-            _registers);
+            _registers, new (), 0);
         
         textInterpreter.InterpretSection();
         
@@ -79,7 +79,7 @@ public class TextInterpreterTests
     {
         string textSection = "add ah bh";
         TextInterpreter textInterpreter = new TextInterpreter(_globalMemory, textSection,
-            _registers);
+            _registers, new (), 0);
         
         textInterpreter.InterpretSection();
         
@@ -91,7 +91,7 @@ public class TextInterpreterTests
     {
         string textSection = "add eax [14]";
         TextInterpreter textInterpreter = new TextInterpreter(_globalMemory, textSection,
-            _registers);
+            _registers, new (), 0);
         
         textInterpreter.InterpretSection();
         
@@ -103,7 +103,7 @@ public class TextInterpreterTests
     {
         string textSection = "add [18] eax";
         TextInterpreter textInterpreter = new TextInterpreter(_globalMemory, textSection,
-            _registers);
+            _registers, new (), 0);
         
         textInterpreter.InterpretSection();
         
@@ -115,11 +115,11 @@ public class TextInterpreterTests
     {
         string textSection = ".label_name";
         TextInterpreter textInterpreter = new TextInterpreter(_globalMemory, textSection,
-            _registers);
+            _registers, new (), 0);
         
         textInterpreter.InterpretSection();
         
-        Assert.True(textInterpreter.Labels.ContainsKey(".label_name"));
+        Assert.True(textInterpreter.LocalLabels.ContainsKey(".label_name"));
     }
     
     [Fact]
@@ -127,7 +127,7 @@ public class TextInterpreterTests
     {
         string textSection = "jmp .label_name";
         TextInterpreter textInterpreter = new TextInterpreter(_globalMemory, textSection,
-            _registers);
+            _registers, new (), 0);
         
         
         Assert.Throws<Exception>(() => textInterpreter.InterpretSection());
